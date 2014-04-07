@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket id="49" flagtype="0">
+    <displayid><![CDATA[OKE-160-11260]]></displayid>
+    <departmentid><![CDATA[3]]></departmentid>
+    <statusid><![CDATA[3]]></statusid>
+    <priorityid><![CDATA[1]]></priorityid>
+    <typeid><![CDATA[1]]></typeid>
+    <userid><![CDATA[12]]></userid>
+    <userorganization />
+    <userorganizationid />
+    <ownerstaffid><![CDATA[2]]></ownerstaffid>
+    <ownerstaffname><![CDATA[Chris H]]></ownerstaffname>
+    <fullname><![CDATA[Chris Howson]]></fullname>
+    <email><![CDATA[cjhowsonfake@gmail.com]]></email>
+    <lastreplier><![CDATA[Chris Howson]]></lastreplier>
+    <subject><![CDATA[Close this ticket]]></subject>
+    <creationtime><![CDATA[1389796642]]></creationtime>
+    <lastactivity><![CDATA[1389796642]]></lastactivity>
+    <laststaffreply><![CDATA[0]]></laststaffreply>
+    <lastuserreply><![CDATA[1389796642]]></lastuserreply>
+    <slaplanid><![CDATA[0]]></slaplanid>
+    <nextreplydue><![CDATA[0]]></nextreplydue>
+    <resolutiondue><![CDATA[0]]></resolutiondue>
+    <replies><![CDATA[0]]></replies>
+    <ipaddress><![CDATA[212.124.236.1]]></ipaddress>
+    <creator><![CDATA[2]]></creator>
+    <creationmode><![CDATA[2]]></creationmode>
+    <creationtype><![CDATA[2]]></creationtype>
+    <isescalated><![CDATA[0]]></isescalated>
+    <escalationruleid><![CDATA[0]]></escalationruleid>
+    <templategroupid><![CDATA[1]]></templategroupid>
+    <tags><![CDATA[tag]]></tags>
+    <templategroupname><![CDATA[Default]]></templategroupname>
+    <posts>
+      <post>
+        <id><![CDATA[59]]></id>
+        <ticketpostid><![CDATA[59]]></ticketpostid>
+        <ticketid><![CDATA[49]]></ticketid>
+        <dateline><![CDATA[1389796642]]></dateline>
+        <userid><![CDATA[12]]></userid>
+        <fullname><![CDATA[Chris Howson]]></fullname>
+        <email><![CDATA[cjhowsonfake@gmail.com]]></email>
+        <emailto />
+        <ipaddress><![CDATA[212.124.236.1]]></ipaddress>
+        <hasattachments><![CDATA[0]]></hasattachments>
+        <creator><![CDATA[2]]></creator>
+        <isthirdparty><![CDATA[0]]></isthirdparty>
+        <ishtml><![CDATA[0]]></ishtml>
+        <isemailed><![CDATA[0]]></isemailed>
+        <staffid><![CDATA[0]]></staffid>
+        <issurveycomment><![CDATA[0]]></issurveycomment>
+        <contents>
+          <![CDATA[Introduction 
+
+BASICS
+
+What a ticket is. A department, status, priority. 
+
+HOW YOUR END-USERS CREATE TICKETS
+
+Support center, email. 
+
+HOW YOUR STAFF RESOLVE TO TICKETS
+
+Staff control panel. 
+
+HOW YOUR STAFF CREATE TICKETS
+
+Staff control panel: 'sending an email' and 'logging on behalf of'. 
+
+CONNECTING TO YOUR EMAIL
+
+Connecting to a mail box, OnDemand email config etc. 
+
+COLLECTING INFORMATION
+
+Custom fields. 
+
+SPEEDING UP SUPPORT
+
+Macros.]]>
+        </contents>
+        <isprivate><![CDATA[0]]></isprivate>
+      </post>
+    </posts>
+  </ticket>
+</tickets>

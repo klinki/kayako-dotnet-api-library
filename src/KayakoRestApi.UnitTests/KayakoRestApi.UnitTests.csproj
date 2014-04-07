@@ -65,6 +65,7 @@
     <Compile Include="Knowledgebase\KnowledgebaseControllerTests.cs" />
     <Compile Include="Knowledgebase\KnowledgebaseAttachmentCollectionSerializationTests.cs" />
     <Compile Include="Knowledgebase\KnowledgebaseCommentSerializationTests.cs" />
+    <Compile Include="Tickets\TicketCollectionSerializationTests.cs" />
     <Compile Include="Tickets\TicketCustomFieldCollectionSerializationTests.cs" />
     <Compile Include="Tickets\TicketControllerTests.cs" />
     <Compile Include="News\NewsItemCommentCollectionSerializationTests.cs" />
@@ -144,6 +145,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\NewsCategoryCollection.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\TicketCollection.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
