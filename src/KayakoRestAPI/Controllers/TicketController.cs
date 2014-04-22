@@ -697,6 +697,11 @@ namespace KayakoRestApi.Controllers
             if (request.StaffId != null)
 			{
                 parameters.AppendRequestData("staffid", request.StaffId.Value);
+
+				if (request.IsPrivate != null)
+				{
+					parameters.AppendRequestDataBool("isprivate", request.IsPrivate.Value);
+				}
 			}
 
 			TicketPostCollection posts = Connector.ExecutePost<TicketPostCollection>(apiMethod, parameters.ToString());

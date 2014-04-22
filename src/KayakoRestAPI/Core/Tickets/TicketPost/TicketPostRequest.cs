@@ -34,6 +34,11 @@ namespace KayakoRestApi.Core.Tickets
         [EitherField("UserId")]
         public int? StaffId { get; set; }
 
+		/// <summary>
+		/// Indicates whether the ticket post is private (hidden from the customer) or not. Applies only to post created by staff user. This parameter needs to be declared either 0 or 1 in case you are creating ticket using staffid
+		/// </summary>
+		public bool? IsPrivate { get; set; }
+
         public static TicketPostRequest FromResponseData(TicketPost responseData)
         {
             return TicketPostRequest.FromResponseType<TicketPost, TicketPostRequest>(responseData);

@@ -63,7 +63,8 @@ namespace KayakoRestApi.IntegrationTests
                 TicketId = randomTicket.Id,
                 Subject = subject,
                 Contents = contents,
-                StaffId = randomStaffUser.Id
+                StaffId = randomStaffUser.Id,
+				IsPrivate = false
             };
 
 			TicketPost createdPost = TestSetup.KayakoApiService.Tickets.AddTicketPost(request);
