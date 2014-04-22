@@ -205,45 +205,52 @@ namespace KayakoRestApi.Net
                 }
             }
 
-            return (TTarget)ProcessWebRequest<TTarget>(request);
+	        try
+	        {
+				return (TTarget)ProcessWebRequest<TTarget>(request);
+	        }
+	        catch (NullReferenceException ex)
+	        {
+				throw new NullReferenceException(String.Format("URL: {0}, Parameters: {1}", requestUrl, parameters), ex);
+	        }
         }
 
         private TTarget ProcessWebRequest<TTarget>(WebRequest request) where TTarget : class, new()
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(TTarget));
-                using (HttpWebResponse webResponse = request.GetResponse() as HttpWebResponse)
-                {
-                    using (StreamReader sr = new StreamReader(webResponse.GetResponseStream()))
-                    {
-                        string streamContents = sr.ReadToEnd();
+	            XmlSerializer serializer = new XmlSerializer(typeof (TTarget));
+	            using (HttpWebResponse webResponse = request.GetResponse() as HttpWebResponse)
+	            {
+		            using (StreamReader sr = new StreamReader(webResponse.GetResponseStream()))
+		            {
+			            string streamContents = sr.ReadToEnd();
 
-						if (typeof(TTarget) == typeof(TestData))
-						{
-							return (TTarget)(object)new TestData(streamContents);
-						}
-						else
-						{
-							using (StringReader serializerStream = new StringReader(streamContents))
-							{
-								TTarget responseData = (TTarget)serializer.Deserialize(serializerStream);
-								return responseData;
-							}
-						}
-                    }
-                }
+			            if (typeof (TTarget) == typeof (TestData))
+			            {
+				            return (TTarget) (object) new TestData(streamContents);
+			            }
+			            else
+			            {
+				            using (StringReader serializerStream = new StringReader(streamContents))
+				            {
+					            TTarget responseData = (TTarget) serializer.Deserialize(serializerStream);
+					            return responseData;
+				            }
+			            }
+		            }
+	            }
             }
             catch (WebException ex)
             {
-                HttpWebResponse response = (HttpWebResponse)ex.Response;
+	            HttpWebResponse response = (HttpWebResponse) ex.Response;
 
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    string streamContents = reader.ReadToEnd();
+	            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+	            {
+		            string streamContents = reader.ReadToEnd();
 
-                    throw new InvalidOperationException(streamContents, ex.InnerException);
-                }
+		            throw new InvalidOperationException(streamContents, ex.InnerException);
+	            }
             }
         }
 
