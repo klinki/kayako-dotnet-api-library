@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Web;
 
 namespace KayakoRestApi.Text
 {
@@ -25,7 +26,7 @@ namespace KayakoRestApi.Text
                 _sb.Append("&");
             }
 
-            _sb.AppendFormat("{0}={1}", key, value);
+            _sb.AppendFormat("{0}={1}", key, HttpUtility.UrlEncode((string)value));
         }
 
         internal void AppendRequestDataArray<T>(string key, IEnumerable<T> values)
@@ -37,7 +38,7 @@ namespace KayakoRestApi.Text
                     _sb.Append("&");
                 }
 
-                _sb.AppendFormat("{0}={1}", key, value);
+                _sb.AppendFormat("{0}={1}", key, HttpUtility.UrlEncode((string)value));
             }
         }
 
