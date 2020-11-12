@@ -11,7 +11,7 @@ namespace KayakoRestApi.IntegrationTests
 			string getList = TestSetup.KayakoApiService.Core.GetListTest();
 
 			OutputMessage(getList);
-			Assert.IsNotNullOrEmpty(getList);
+            Assert.That(getList, Is.Not.Null.Or.Empty);
 		}
 
 		[TestCase(1)]
@@ -22,7 +22,7 @@ namespace KayakoRestApi.IntegrationTests
 			string get = TestSetup.KayakoApiService.Core.GetTest(id);
 
 			OutputMessage(get);
-			Assert.IsNotNullOrEmpty(get);
+            Assert.That(get, Is.Not.Null.Or.Empty);
 		}
 
 		[TestCase(1)]
@@ -33,7 +33,7 @@ namespace KayakoRestApi.IntegrationTests
 			string put = TestSetup.KayakoApiService.Core.PutTest(id);
 
 			OutputMessage(put);
-			Assert.IsNotNullOrEmpty(put);
+            Assert.That(put, Is.Not.Null.Or.Empty);
 		}
 
 		public void Post()
@@ -41,7 +41,7 @@ namespace KayakoRestApi.IntegrationTests
 			string post = TestSetup.KayakoApiService.Core.PostTest();
 
 			OutputMessage(post);
-			Assert.IsNotNullOrEmpty(post);
+            Assert.That(post, Is.Not.Null.Or.Empty);
 		}
 
 		[TestCase(1)]

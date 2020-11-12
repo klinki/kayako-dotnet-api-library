@@ -24,7 +24,7 @@ namespace KayakoRestApi.RequestBase
         /// <summary>
         /// Validates the request base object for a request type (create or update)
         /// </summary>
-		internal void EnsureValidData(RequestTypes requestType)
+        public void EnsureValidData(RequestTypes requestType)
 		{
 			PropertyInfo[] properties = GetType().GetProperties();
             

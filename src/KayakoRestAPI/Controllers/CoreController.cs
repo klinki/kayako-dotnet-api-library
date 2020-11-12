@@ -21,17 +21,17 @@ namespace KayakoRestApi.Controllers
 
 	public sealed class CoreController : BaseController, ICoreController
 	{
-		internal CoreController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+		public CoreController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
 		}
 
-		internal CoreController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public CoreController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal CoreController(IKayakoApiRequest kayakoApiRequest) 
+        public CoreController(IKayakoApiRequest kayakoApiRequest) 
 			: base(kayakoApiRequest)
 		{
 		}

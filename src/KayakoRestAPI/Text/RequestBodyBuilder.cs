@@ -4,21 +4,21 @@ using System.Text;
 
 namespace KayakoRestApi.Text
 {
-    internal class RequestBodyBuilder
+    public class RequestBodyBuilder
     {
         private StringBuilder _sb;
 
-        internal RequestBodyBuilder()
+        public RequestBodyBuilder()
         {
             _sb = new StringBuilder();
         }
 
-        internal RequestBodyBuilder(string value)
+        public RequestBodyBuilder(string value)
         {
             _sb = new StringBuilder(value);
         }
 
-		internal void AppendRequestData(string key, object value)
+        public void AppendRequestData(string key, object value)
         {
             if (!String.IsNullOrEmpty(_sb.ToString()))
             {

@@ -27,17 +27,17 @@ namespace KayakoRestApi.Controllers
 	/// </summary>
     public sealed class DepartmentController : BaseController, IDepartmentController
 	{
-        internal DepartmentController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+        public DepartmentController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
         }
 
-		internal DepartmentController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public DepartmentController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal DepartmentController(IKayakoApiRequest kayakoApiRequest) 
+        public DepartmentController(IKayakoApiRequest kayakoApiRequest) 
 			: base(kayakoApiRequest)
 		{
 		}

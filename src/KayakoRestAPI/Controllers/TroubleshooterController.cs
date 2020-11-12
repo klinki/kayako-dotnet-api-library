@@ -50,17 +50,17 @@ namespace KayakoRestApi.Controllers
 
 	public sealed class TroubleshooterController : BaseController, ITroubleshooterController
 	{
-		internal TroubleshooterController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+        public TroubleshooterController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
         }
 
-		internal TroubleshooterController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public TroubleshooterController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal TroubleshooterController(IKayakoApiRequest kayakoApiRequest) 
+        public TroubleshooterController(IKayakoApiRequest kayakoApiRequest) 
 			: base(kayakoApiRequest)
 		{
 		}

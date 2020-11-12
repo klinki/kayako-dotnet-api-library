@@ -53,17 +53,17 @@ namespace KayakoRestApi.Controllers
 
 	public sealed class NewsController : BaseController, INewsController
 	{
-		internal NewsController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+        public NewsController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
         }
 
-		internal NewsController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public NewsController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal NewsController(IKayakoApiRequest kayakoApiRequest) 
+        public NewsController(IKayakoApiRequest kayakoApiRequest) 
 			: base(kayakoApiRequest)
 		{
 		}

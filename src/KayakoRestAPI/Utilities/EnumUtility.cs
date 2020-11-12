@@ -6,9 +6,9 @@ using System.Xml.Serialization;
 
 namespace KayakoRestApi.Data
 {
-	internal static class EnumUtility
+    public static class EnumUtility
 	{
-        internal static string ToApiString(object enumValue)
+        public static string ToApiString(object enumValue)
 		{
 			FieldInfo fi = enumValue.GetType().GetField(enumValue.ToString());
 			

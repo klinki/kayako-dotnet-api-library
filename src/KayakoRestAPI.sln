@@ -5,12 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakoRestApi", "KayakoRest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakoRestAPI.Testing", "TestApplication\KayakoRestAPI.Testing.csproj", "{752985BA-E382-4716-966D-F566F7E3489D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{FC3D4805-75A1-4CBF-89C6-45992AD2B317}"
-	ProjectSection(SolutionItems) = preProject
-		LICENSE = LICENSE
-		README = README
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakoRestApi.IntegrationTests", "KayakoRestApi.IntegrationTests\KayakoRestApi.IntegrationTests.csproj", "{FE037841-E104-4F7A-9A39-6A03AC32236C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KayakoRestApi.UnitTests", "KayakoRestApi.UnitTests\KayakoRestApi.UnitTests.csproj", "{967820D0-6450-4871-94A9-C6666EBA3947}"

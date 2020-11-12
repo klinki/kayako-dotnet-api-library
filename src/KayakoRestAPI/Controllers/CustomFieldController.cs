@@ -15,17 +15,17 @@ namespace KayakoRestApi.Controllers
 
 	public sealed class CustomFieldController : BaseController, ICustomFieldController
 	{
-		internal CustomFieldController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+        public CustomFieldController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
 		}
 
-		internal CustomFieldController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public CustomFieldController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal CustomFieldController(IKayakoApiRequest kayakoRestApi) : base(kayakoRestApi)
+        public CustomFieldController(IKayakoApiRequest kayakoRestApi) : base(kayakoRestApi)
 		{
 		}
 

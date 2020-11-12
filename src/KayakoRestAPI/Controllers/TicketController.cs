@@ -132,17 +132,17 @@ namespace KayakoRestApi.Controllers
 	/// </summary>
     public sealed class TicketController : BaseController, ITicketController
     {
-        internal TicketController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+        public TicketController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
         }
 
-		internal TicketController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public TicketController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal TicketController(IKayakoApiRequest kayakoApiRequest) : base(kayakoApiRequest)
+        public TicketController(IKayakoApiRequest kayakoApiRequest) : base(kayakoApiRequest)
 		{
 		}
 

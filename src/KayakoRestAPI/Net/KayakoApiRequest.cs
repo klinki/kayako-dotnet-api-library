@@ -9,7 +9,7 @@ using KayakoRestApi.Core.Test;
 
 namespace KayakoRestApi.Net
 {
-	internal interface IKayakoApiRequest
+	public interface IKayakoApiRequest
 	{
 		TTarget ExecutePut<TTarget>(string apiMethod, string parameters) where TTarget : class, new();
 

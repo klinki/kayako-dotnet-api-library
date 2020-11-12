@@ -53,17 +53,17 @@ namespace KayakoRestApi.Controllers
 
 	public sealed class KnowledgebaseController : BaseController, IKnowledgebaseController
 	{
-		internal KnowledgebaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
+        public KnowledgebaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
             : base(apiKey, secretKey, apiUrl, proxy)
         {
         }
 
-		internal KnowledgebaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
+        public KnowledgebaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
 			: base(apiKey, secretKey, apiUrl, proxy, requestType)
 		{
 		}
 
-		internal KnowledgebaseController(IKayakoApiRequest kayakoApiRequest) 
+        public KnowledgebaseController(IKayakoApiRequest kayakoApiRequest) 
 			: base(kayakoApiRequest)
 		{
 		}
