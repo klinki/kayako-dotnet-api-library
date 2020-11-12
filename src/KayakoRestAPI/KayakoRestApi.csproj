@@ -17,7 +17,9 @@
     <PackageProjectUrl>https://github.com/Zubastic/kayako-dotnet-api-library</PackageProjectUrl>
     <PackageLicense>https://github.com/Zubastic/kayako-dotnet-api-library/blob/master/LICENSE</PackageLicense>
     <PackageIcon>kayako.png</PackageIcon>
+    <PackageLicenseExpression>BSD-4-Clause</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Zubastic/kayako-dotnet-api-library</RepositoryUrl>
+    <Authors>Kayako, Zubastic</Authors>
 </PropertyGroup>
 
 <ItemGroup>
