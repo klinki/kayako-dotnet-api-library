@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketNote
 {
     /// <summary>
-    /// Definition of a list of ticket notes
-    /// <remarks>
-    /// See : http://wiki.kayako.com/display/DEV/REST+-+TicketNote
-    /// </remarks>
+    ///     Definition of a list of ticket notes
+    ///     <remarks>
+    ///         See : http://wiki.kayako.com/display/DEV/REST+-+TicketNote
+    ///     </remarks>
     /// </summary>
     [XmlRoot("notes")]
-    public class TicketNoteCollection : List<TicketNote>
-    {
-        /// <summary>
-        /// Create a list of ticket notes.
-        /// </summary>
-        public TicketNoteCollection()
-        {
-        }
-    }
+    public class TicketNoteCollection : List<TicketNote> { }
 }

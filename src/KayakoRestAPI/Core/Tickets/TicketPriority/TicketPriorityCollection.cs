@@ -1,25 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketPriority
 {
     /// <summary>
-    /// Definition of a list of Ticket Priorities.
-    /// 
-    /// <remarks>
-	/// See : http://wiki.kayako.com/display/DEV/REST+-+TicketPriority
-    /// </remarks>
+    ///     Definition of a list of Ticket Priorities.
+    ///     <remarks>
+    ///         See : http://wiki.kayako.com/display/DEV/REST+-+TicketPriority
+    ///     </remarks>
     /// </summary>
     [XmlRoot("ticketpriorities")]
-    public class TicketPriorityCollection : List<TicketPriority>
-    {
-        /// <summary>
-        /// Create a list of ticket priorities.
-        /// </summary>
-        public TicketPriorityCollection()
-        {
-        }
-    }
+    public class TicketPriorityCollection : List<TicketPriority> { }
 }

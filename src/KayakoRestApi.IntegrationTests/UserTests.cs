@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using System.Configuration;
-using KayakoRestApi;
 using System.Diagnostics;
-using KayakoRestApi.Core.Users;
-using KayakoRestApi.Data;
-using KayakoRestApi.Utilities;
 using KayakoRestApi.Core.Constants;
+using KayakoRestApi.Core.Users;
+using KayakoRestApi.IntegrationTests.TestBase;
+using KayakoRestApi.Utilities;
+using NUnit.Framework;
 
 namespace KayakoRestApi.IntegrationTests
 {
-	[TestFixture(Description = "A set of tests testing Api methods around Users")]
-	public class UserTests : UnitTestBase
-	{
+    [TestFixture(Description = "A set of tests testing Api methods around Users")]
+    public class UserTests : UnitTestBase
+    {
         private User TestData
         {
             get
             {
-                User testUser = new User();
-				testUser.Dateline = UnixTimeUtility.ToUnixTime(DateTime.Now);
+                var testUser = new User();
+                testUser.Dateline = UnixTimeUtility.ToUnixTime(DateTime.Now);
                 testUser.Designation = "CEO";
-                testUser.EmailAddresses = new string[] { "test1@test.com" };
+                testUser.EmailAddresses = new[] { "test1@test.com" };
                 testUser.EnableDst = true;
                 testUser.Expiry = 0;
                 testUser.FullName = "Full Name";
@@ -40,74 +36,74 @@ namespace KayakoRestApi.IntegrationTests
             }
         }
 
-		[Test]
-		public void GetAllGetUsers()
-		{
-			UserCollection users = TestSetup.KayakoApiService.Users.GetUsers();
-			
-			Assert.IsNotNull(users, "No users were returned");
-			Assert.IsNotEmpty(users, "No users were returned");
-		}
+        [Test]
+        public void GetAllGetUsers()
+        {
+            var users = TestSetup.KayakoApiService.Users.GetUsers();
 
-		[Test]
-		public void GetUser()
-		{
-			UserCollection users = TestSetup.KayakoApiService.Users.GetUsers();
+            Assert.IsNotNull(users, "No users were returned");
+            Assert.IsNotEmpty(users, "No users were returned");
+        }
 
-			Assert.IsNotNull(users, "No users were returned");
-			Assert.IsNotEmpty(users, "No users  were returned");
+        [Test]
+        public void GetUser()
+        {
+            var users = TestSetup.KayakoApiService.Users.GetUsers();
 
-			User userToGet = users[new Random().Next(users.Count)];
+            Assert.IsNotNull(users, "No users were returned");
+            Assert.IsNotEmpty(users, "No users  were returned");
+
+            var userToGet = users[new Random().Next(users.Count)];
 
             Trace.WriteLine("GetUser using user id: " + userToGet.Id);
 
-			User user = TestSetup.KayakoApiService.Users.GetUser(userToGet.Id);
+            var user = TestSetup.KayakoApiService.Users.GetUser(userToGet.Id);
 
-			CompareUserGroup(user, userToGet);
-		}
+            this.CompareUserGroup(user, userToGet);
+        }
 
-        [Test(Description="Tests creating, updating and deleting users")]
+        [Test(Description = "Tests creating, updating and deleting users")]
         public void CreateUpdateDeleteUser()
         {
-            User dummyData = TestData;
+            var dummyData = this.TestData;
 
-            User createdUser = TestSetup.KayakoApiService.Users.CreateUser(UserRequest.FromResponseData(dummyData), "password123!", false);
+            var createdUser = TestSetup.KayakoApiService.Users.CreateUser(UserRequest.FromResponseData(dummyData), "password123!", false);
 
             Assert.IsNotNull(createdUser);
             dummyData.Id = createdUser.Id;
-			dummyData.Dateline = createdUser.Dateline;
+            dummyData.Dateline = createdUser.Dateline;
 
-			CompareUserGroup(dummyData, createdUser);
+            this.CompareUserGroup(dummyData, createdUser);
 
-			dummyData.FullName = "Updated FullName";
-			dummyData.EmailAddresses = new string[] { "test1@test.com", "test2@test.com" };
-			dummyData.Salutation = UserSalutation.Mrs;
-			dummyData.Designation = "CGE";
-			dummyData.Phone = "09876543212";
-			dummyData.IsEnabled = false;
-			dummyData.Role = UserRole.User;
-			
-            User updatedUser = TestSetup.KayakoApiService.Users.UpdateUser(UserRequest.FromResponseData(dummyData));
-			dummyData.Dateline = createdUser.Dateline;
+            dummyData.FullName = "Updated FullName";
+            dummyData.EmailAddresses = new[] { "test1@test.com", "test2@test.com" };
+            dummyData.Salutation = UserSalutation.Mrs;
+            dummyData.Designation = "CGE";
+            dummyData.Phone = "09876543212";
+            dummyData.IsEnabled = false;
+            dummyData.Role = UserRole.User;
+
+            var updatedUser = TestSetup.KayakoApiService.Users.UpdateUser(UserRequest.FromResponseData(dummyData));
+            dummyData.Dateline = createdUser.Dateline;
 
             Assert.IsNotNull(updatedUser);
-            CompareUserGroup(dummyData, updatedUser);
+            this.CompareUserGroup(dummyData, updatedUser);
 
-            bool success = TestSetup.KayakoApiService.Users.DeleteUser(updatedUser.Id);
+            var success = TestSetup.KayakoApiService.Users.DeleteUser(updatedUser.Id);
 
             Assert.IsTrue(success);
         }
 
-		[Test(Description = "Tests searching for a user")]
-		[TestCase("howson")]
-		[TestCase("chris")]
-		public void UserSearch(string query)
-		{
-			UserCollection matchedUsers = TestSetup.KayakoApiService.Users.UserSearch(query);
+        [Test(Description = "Tests searching for a user")]
+        [TestCase("howson")]
+        [TestCase("chris")]
+        public void UserSearch(string query)
+        {
+            var matchedUsers = TestSetup.KayakoApiService.Users.UserSearch(query);
 
-			Assert.NotNull(matchedUsers);
-			Assert.IsNotEmpty(matchedUsers);
-		}
+            Assert.NotNull(matchedUsers);
+            Assert.IsNotEmpty(matchedUsers);
+        }
 
         private void CompareUserGroup(User one, User two)
         {
@@ -121,11 +117,11 @@ namespace KayakoRestApi.IntegrationTests
             Assert.AreEqual(one.Id, two.Id);
             Assert.AreEqual(one.IsEnabled, two.IsEnabled);
             Assert.AreEqual(one.LastVisit, two.LastVisit);
-			
-			if (one.OrganizationId != null && one.OrganizationId.HasValue)
-			{
-				Assert.AreEqual(one.OrganizationId.Value, two.OrganizationId.Value);
-			}
+
+            if (one.OrganizationId != null && one.OrganizationId.HasValue)
+            {
+                Assert.AreEqual(one.OrganizationId.Value, two.OrganizationId.Value);
+            }
 
             Assert.AreEqual(one.Phone, two.Phone);
             Assert.AreEqual(one.Role, two.Role);
@@ -133,8 +129,8 @@ namespace KayakoRestApi.IntegrationTests
             Assert.AreEqual(one.SlaPlanExpiry, two.SlaPlanExpiry);
             Assert.AreEqual(one.SlaPlanId, two.SlaPlanId);
             Assert.AreEqual(one.TimeZone, two.TimeZone);
-            
-            AssertObjectXmlEqual<User>(one, two);
+
+            AssertObjectXmlEqual(one, two);
         }
-	}
+    }
 }

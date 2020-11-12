@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using NUnit.Framework;
-using KayakoRestApi.Core;
-using KayakoRestApi.Core.Tickets;
+using KayakoRestApi.Core.Tickets.TicketPriority;
+using KayakoRestApi.IntegrationTests.TestBase;
 
 namespace KayakoRestApi.IntegrationTests
 {

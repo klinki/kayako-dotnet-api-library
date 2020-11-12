@@ -10,422 +10,406 @@ using NUnit.Framework;
 
 namespace KayakoRestApi.UnitTests.Knowledgebase
 {
-	[TestFixture]
-	public class KnowledgebaseControllerTests
-	{
-		private IKnowledgebaseController _knowledgebaseController;
-		private Mock<IKayakoApiRequest> _kayakoApiRequest;
-		private KnowledgebaseCategoryCollection _responseKnowledgebaseCategoryCollection;
-		private KnowledgebaseArticleCollection _responseKnowledgebaseArticleCollection;
-		private KnowledgebaseCommentCollection _responseKnowledgebaseCommentCollection;
-		private KnowledgebaseAttachmentCollection _responseKnowledgebaseAttachmentCollection;
-
-		[SetUp]
-		public void Setup()
-		{
-			_kayakoApiRequest = new Mock<IKayakoApiRequest>();
-			_knowledgebaseController = new KnowledgebaseController(_kayakoApiRequest.Object);
-
-			_responseKnowledgebaseCategoryCollection = new KnowledgebaseCategoryCollection
-				{
-					new KnowledgebaseCategory(),
-					new KnowledgebaseCategory()
-				};
-
-			_responseKnowledgebaseArticleCollection = new KnowledgebaseArticleCollection
-				{
-					new KnowledgebaseArticle(),
-					new KnowledgebaseArticle()
-				};
-
-			_responseKnowledgebaseCommentCollection = new KnowledgebaseCommentCollection
-				{
-					new KnowledgebaseComment(),
-					new KnowledgebaseComment()
-				};
-
-			_responseKnowledgebaseAttachmentCollection = new KnowledgebaseAttachmentCollection
-				{
-					new KnowledgebaseAttachment(),
-					new KnowledgebaseAttachment()
-				};
-		}
-
-		#region Knowledgebase Category Methods
-
-		[Test]
-		public void GetKnowledgebaseCategories()
-		{
-			const string apiMethod = "/Knowledgebase/Category/ListAll/-1/-1";
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod)).Returns(_responseKnowledgebaseCategoryCollection);
-
-			var knowledgebaseCategories = _knowledgebaseController.GetKnowledgebaseCategories();
-
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod), Times.Once());
-
-			Assert.That(knowledgebaseCategories, Is.EqualTo(_responseKnowledgebaseCategoryCollection));
-		}
-
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void GetKnowledgebaseCategory(int knowledgebaseCategoryId)
-		{
-			string apiMethod = string.Format("/Knowledgebase/Category/{0}", knowledgebaseCategoryId);
-
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod)).Returns(_responseKnowledgebaseCategoryCollection);
-
-			var knowledgebaseCategory = _knowledgebaseController.GetKnowledgebaseCategory(knowledgebaseCategoryId);
-
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod), Times.Once());
-
-			Assert.That(knowledgebaseCategory, Is.EqualTo(_responseKnowledgebaseCategoryCollection.FirstOrDefault()));
-		}
-
-		[Test]
-		public void CreateKnowledgebaseCategory()
-		{
-			var knowledgebaseCategoryRequest = new KnowledgebaseCategoryRequest
-				{
-					Title = "Title",
-					CategoryType = KnowledgebaseCategoryType.Inherit,
-					ParentCategoryId = 3,
-					DisplayOrder = 3,
-					ArticleSortOrder = KnowledgebaseCategoryArticleSortOrder.SortCreationDate,
-					AllowComments = true,
-					AllowRating = false,
-					IsPublished = true,
-					UserVisibilityCustom = true,
-					UserGroupIdList = new[] {1, 2, 3},
-					StaffVisibilityCustom = false,
-					StaffGroupIdList = new[] {1, 2, 3},
-					StaffId = 3
-				};
-
-			const string apiMethod = "/Knowledgebase/Category";
-			const string parameters = "title=Title&categorytype=4&parentcategoryid=3&displayorder=3&articlesortorder=4&allowcomments=1&allowrating=0&ispublished=1&uservisibilitycustom=1&usergroupidlist=1,2,3&staffvisibilitycustom=0&staffgroupidlist=1,2,3&staffid=3";
-
-			_kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseCategoryCollection>(apiMethod, parameters)).Returns(_responseKnowledgebaseCategoryCollection);
-
-			var knowledgebaseCategory = _knowledgebaseController.CreateKnowledgebaseCategory(knowledgebaseCategoryRequest);
-
-			_kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseCategoryCollection>(apiMethod, parameters), Times.Once());
-			Assert.That(knowledgebaseCategory, Is.EqualTo(_responseKnowledgebaseCategoryCollection.FirstOrDefault()));
-		}
+    [TestFixture]
+    public class KnowledgebaseControllerTests
+    {
+        [SetUp]
+        public void Setup()
+        {
+            this.kayakoApiRequest = new Mock<IKayakoApiRequest>();
+            this.knowledgebaseController = new KnowledgebaseController(this.kayakoApiRequest.Object);
+
+            this.responseKnowledgebaseCategoryCollection = new KnowledgebaseCategoryCollection
+            {
+                new KnowledgebaseCategory(),
+                new KnowledgebaseCategory()
+            };
+
+            this.responseKnowledgebaseArticleCollection = new KnowledgebaseArticleCollection
+            {
+                new KnowledgebaseArticle(),
+                new KnowledgebaseArticle()
+            };
+
+            this.responseKnowledgebaseCommentCollection = new KnowledgebaseCommentCollection
+            {
+                new KnowledgebaseComment(),
+                new KnowledgebaseComment()
+            };
+
+            this.responseKnowledgebaseAttachmentCollection = new KnowledgebaseAttachmentCollection
+            {
+                new KnowledgebaseAttachment(),
+                new KnowledgebaseAttachment()
+            };
+        }
+
+        private IKnowledgebaseController knowledgebaseController;
+        private Mock<IKayakoApiRequest> kayakoApiRequest;
+        private KnowledgebaseCategoryCollection responseKnowledgebaseCategoryCollection;
+        private KnowledgebaseArticleCollection responseKnowledgebaseArticleCollection;
+        private KnowledgebaseCommentCollection responseKnowledgebaseCommentCollection;
+        private KnowledgebaseAttachmentCollection responseKnowledgebaseAttachmentCollection;
+
+        [Test]
+        public void GetKnowledgebaseCategories()
+        {
+            const string apiMethod = "/Knowledgebase/Category/ListAll/-1/-1";
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod)).Returns(this.responseKnowledgebaseCategoryCollection);
+
+            var knowledgebaseCategories = this.knowledgebaseController.GetKnowledgebaseCategories();
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod), Times.Once());
+
+            Assert.That(knowledgebaseCategories, Is.EqualTo(this.responseKnowledgebaseCategoryCollection));
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetKnowledgebaseCategory(int knowledgebaseCategoryId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Category/{0}", knowledgebaseCategoryId);
+
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod)).Returns(this.responseKnowledgebaseCategoryCollection);
+
+            var knowledgebaseCategory = this.knowledgebaseController.GetKnowledgebaseCategory(knowledgebaseCategoryId);
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod), Times.Once());
+
+            Assert.That(knowledgebaseCategory, Is.EqualTo(this.responseKnowledgebaseCategoryCollection.FirstOrDefault()));
+        }
+
+        [Test]
+        public void CreateKnowledgebaseCategory()
+        {
+            var knowledgebaseCategoryRequest = new KnowledgebaseCategoryRequest
+            {
+                Title = "Title",
+                CategoryType = KnowledgebaseCategoryType.Inherit,
+                ParentCategoryId = 3,
+                DisplayOrder = 3,
+                ArticleSortOrder = KnowledgebaseCategoryArticleSortOrder.SortCreationDate,
+                AllowComments = true,
+                AllowRating = false,
+                IsPublished = true,
+                UserVisibilityCustom = true,
+                UserGroupIdList = new[] { 1, 2, 3 },
+                StaffVisibilityCustom = false,
+                StaffGroupIdList = new[] { 1, 2, 3 },
+                StaffId = 3
+            };
+
+            const string apiMethod = "/Knowledgebase/Category";
+            const string parameters = "title=Title&categorytype=4&parentcategoryid=3&displayorder=3&articlesortorder=4&allowcomments=1&allowrating=0&ispublished=1&uservisibilitycustom=1&usergroupidlist=1,2,3&staffvisibilitycustom=0&staffgroupidlist=1,2,3&staffid=3";
+
+            this.kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseCategoryCollection>(apiMethod, parameters)).Returns(this.responseKnowledgebaseCategoryCollection);
+
+            var knowledgebaseCategory = this.knowledgebaseController.CreateKnowledgebaseCategory(knowledgebaseCategoryRequest);
+
+            this.kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseCategoryCollection>(apiMethod, parameters), Times.Once());
+            Assert.That(knowledgebaseCategory, Is.EqualTo(this.responseKnowledgebaseCategoryCollection.FirstOrDefault()));
+        }
+
+        [Test]
+        public void UpdateKnowledgebaseCategory()
+        {
+            var knowledgebaseCategoryRequest = new KnowledgebaseCategoryRequest
+            {
+                Id = 3,
+                Title = "Title",
+                CategoryType = KnowledgebaseCategoryType.Inherit,
+                ParentCategoryId = 3,
+                DisplayOrder = 3,
+                ArticleSortOrder = KnowledgebaseCategoryArticleSortOrder.SortCreationDate,
+                AllowComments = true,
+                AllowRating = false,
+                IsPublished = true,
+                UserVisibilityCustom = true,
+                UserGroupIdList = new[] { 1, 2, 3 },
+                StaffVisibilityCustom = false,
+                StaffGroupIdList = new[] { 1, 2, 3 }
+            };
+
+            var apiMethod = string.Format("/Knowledgebase/Category/{0}", knowledgebaseCategoryRequest.Id);
+            const string parameters = "title=Title&categorytype=4&parentcategoryid=3&displayorder=3&articlesortorder=4&allowcomments=1&allowrating=0&ispublished=1&uservisibilitycustom=1&usergroupidlist=1,2,3&staffvisibilitycustom=0&staffgroupidlist=1,2,3";
+
+            this.kayakoApiRequest.Setup(x => x.ExecutePut<KnowledgebaseCategoryCollection>(apiMethod, parameters)).Returns(this.responseKnowledgebaseCategoryCollection);
+
+            var knowledgebaseCategory = this.knowledgebaseController.UpdateKnowledgebaseCategory(knowledgebaseCategoryRequest);
+
+            this.kayakoApiRequest.Verify(x => x.ExecutePut<KnowledgebaseCategoryCollection>(apiMethod, parameters), Times.Once());
+            Assert.That(knowledgebaseCategory, Is.EqualTo(this.responseKnowledgebaseCategoryCollection.FirstOrDefault()));
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void DeleteKnowledgebaseCategory(int knowledgebaseCategoryId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Category/{0}", knowledgebaseCategoryId);
+
+            this.kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(true);
+
+            var deleteSuccess = this.knowledgebaseController.DeleteKnowledgebaseCategory(knowledgebaseCategoryId);
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod), Times.Once());
+
+            Assert.IsTrue(deleteSuccess);
+        }
+
+        [TestCase(1, 1)]
+        [TestCase(1, 3)]
+        public void GetKnowledgebaseArticlesPaging(int count, int start)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Article/ListAll/{0}/{1}", count, start);
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod)).Returns(this.responseKnowledgebaseArticleCollection);
+
+            var knowledgebaseArticles = this.knowledgebaseController.GetKnowledgebaseArticles(count, start);
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod), Times.Once());
+
+            Assert.That(knowledgebaseArticles, Is.EqualTo(this.responseKnowledgebaseArticleCollection));
+        }
+
+        [Test]
+        public void GetKnowledgebaseArticles()
+        {
+            const string apiMethod = "/Knowledgebase/Article";
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod)).Returns(this.responseKnowledgebaseArticleCollection);
+
+            var knowledgebaseArticles = this.knowledgebaseController.GetKnowledgebaseArticles();
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod), Times.Once());
 
-		[Test]
-		public void UpdateKnowledgebaseCategory()
-		{
-			var knowledgebaseCategoryRequest = new KnowledgebaseCategoryRequest
-			{
-				Id = 3,
-				Title = "Title",
-				CategoryType = KnowledgebaseCategoryType.Inherit,
-				ParentCategoryId = 3,
-				DisplayOrder = 3,
-				ArticleSortOrder = KnowledgebaseCategoryArticleSortOrder.SortCreationDate,
-				AllowComments = true,
-				AllowRating = false,
-				IsPublished = true,
-				UserVisibilityCustom = true,
-				UserGroupIdList = new[] { 1, 2, 3 },
-				StaffVisibilityCustom = false,
-				StaffGroupIdList = new[] { 1, 2, 3 },
-			};
+            Assert.That(knowledgebaseArticles, Is.EqualTo(this.responseKnowledgebaseArticleCollection));
+        }
 
-			string apiMethod = string.Format("/Knowledgebase/Category/{0}", knowledgebaseCategoryRequest.Id);
-			const string parameters = "title=Title&categorytype=4&parentcategoryid=3&displayorder=3&articlesortorder=4&allowcomments=1&allowrating=0&ispublished=1&uservisibilitycustom=1&usergroupidlist=1,2,3&staffvisibilitycustom=0&staffgroupidlist=1,2,3";
-
-			_kayakoApiRequest.Setup(x => x.ExecutePut<KnowledgebaseCategoryCollection>(apiMethod, parameters)).Returns(_responseKnowledgebaseCategoryCollection);
-
-			var knowledgebaseCategory = _knowledgebaseController.UpdateKnowledgebaseCategory(knowledgebaseCategoryRequest);
-
-			_kayakoApiRequest.Verify(x => x.ExecutePut<KnowledgebaseCategoryCollection>(apiMethod, parameters), Times.Once());
-			Assert.That(knowledgebaseCategory, Is.EqualTo(_responseKnowledgebaseCategoryCollection.FirstOrDefault()));
-		}
-
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void DeleteKnowledgebaseCategory(int knowledgebaseCategoryId)
-		{
-			string apiMethod = string.Format("/Knowledgebase/Category/{0}", knowledgebaseCategoryId);
-
-			_kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(true);
-
-			var deleteSuccess = _knowledgebaseController.DeleteKnowledgebaseCategory(knowledgebaseCategoryId);
-
-			_kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod), Times.Once());
-
-			Assert.IsTrue(deleteSuccess);
-		}
-
-		#endregion
-
-		#region Knoweldgebase Article Methods
-
-		[TestCase(1,1)]
-		[TestCase(1, 3)]
-		public void GetKnowledgebaseArticlesPaging(int count, int start)
-		{
-			string apiMethod = string.Format("/Knowledgebase/Article/ListAll/{0}/{1}", count, start);
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod)).Returns(_responseKnowledgebaseArticleCollection);
-
-			var knowledgebaseArticles = _knowledgebaseController.GetKnowledgebaseArticles(count, start);
-
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod), Times.Once());
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetKnowledgebaseArticle(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Article/{0}", knowledgebaseArticleId);
+
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod)).Returns(this.responseKnowledgebaseArticleCollection);
 
-			Assert.That(knowledgebaseArticles, Is.EqualTo(_responseKnowledgebaseArticleCollection));
-		}
+            var knowledgebaseArticle = this.knowledgebaseController.GetKnowledgebaseArticle(knowledgebaseArticleId);
 
-		[Test]
-		public void GetKnowledgebaseArticles()
-		{
-			const string apiMethod = "/Knowledgebase/Article";
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod)).Returns(_responseKnowledgebaseArticleCollection);
-
-			var knowledgebaseArticles = _knowledgebaseController.GetKnowledgebaseArticles();
-
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod), Times.Once());
-
-			Assert.That(knowledgebaseArticles, Is.EqualTo(_responseKnowledgebaseArticleCollection));
-		}
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod), Times.Once());
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void GetKnowledgebaseArticle(int knowledgebaseArticleId)
-		{
-			string apiMethod = string.Format("/Knowledgebase/Article/{0}", knowledgebaseArticleId);
+            Assert.That(knowledgebaseArticle, Is.EqualTo(this.responseKnowledgebaseArticleCollection.FirstOrDefault()));
+        }
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod)).Returns(_responseKnowledgebaseArticleCollection);
-
-			var knowledgebaseArticle = _knowledgebaseController.GetKnowledgebaseArticle(knowledgebaseArticleId);
+        [Test]
+        public void CreateKnowledgebaseArticle()
+        {
+            var knowledgebaseArticleRequest = new KnowledgebaseArticleRequest
+            {
+                CreatorId = 3,
+                Subject = "Subject",
+                Contents = "Contents",
+                ArticleStatus = KnowledgebaseArticleStatus.Published,
+                IsFeatured = false,
+                AllowComments = true,
+                CategoryIds = new[] { 1 }
+            };
+
+            const string apiMethod = "/Knowledgebase/Article";
+            const string parameters = "subject=Subject&contents=Contents&creatorid=3&articlestatus=1&isfeatured=0&allowcomments=1&categoryid=1";
+
+            this.kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseArticleCollection>(apiMethod, parameters)).Returns(this.responseKnowledgebaseArticleCollection);
+
+            var knowledgebaseArticle = this.knowledgebaseController.CreateKnowledgebaseArticle(knowledgebaseArticleRequest);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod), Times.Once());
+            this.kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseArticleCollection>(apiMethod, parameters), Times.Once());
+            Assert.That(knowledgebaseArticle, Is.EqualTo(this.responseKnowledgebaseArticleCollection.FirstOrDefault()));
+        }
 
-			Assert.That(knowledgebaseArticle, Is.EqualTo(_responseKnowledgebaseArticleCollection.FirstOrDefault()));
-		}
+        [Test]
+        public void UpdateKnowledgebaseArticle()
+        {
+            var knowledgebaseArticleRequest = new KnowledgebaseArticleRequest
+            {
+                Id = 1,
+                EditedStaffId = 3,
+                Subject = "Subject",
+                Contents = "Contents",
+                ArticleStatus = KnowledgebaseArticleStatus.Published,
+                IsFeatured = false,
+                AllowComments = true,
+                CategoryIds = new[] { 1, 2, 3 }
+            };
 
-		[Test]
-		public void CreateKnowledgebaseArticle()
-		{
-			var knowledgebaseArticleRequest = new KnowledgebaseArticleRequest
-			{
-				CreatorId = 3,
-				Subject = "Subject",
-				Contents = "Contents",
-				ArticleStatus = KnowledgebaseArticleStatus.Published,
-				IsFeatured = false,
-				AllowComments = true,
-				CategoryIds = new [] { 1 }
-			};
-
-			const string apiMethod = "/Knowledgebase/Article";
-			const string parameters = "subject=Subject&contents=Contents&creatorid=3&articlestatus=1&isfeatured=0&allowcomments=1&categoryid=1";
-
-			_kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseArticleCollection>(apiMethod, parameters)).Returns(_responseKnowledgebaseArticleCollection);
-
-			var knowledgebaseArticle = _knowledgebaseController.CreateKnowledgebaseArticle(knowledgebaseArticleRequest);
-
-			_kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseArticleCollection>(apiMethod, parameters), Times.Once());
-			Assert.That(knowledgebaseArticle, Is.EqualTo(_responseKnowledgebaseArticleCollection.FirstOrDefault()));
-		}
+            var apiMethod = string.Format("/Knowledgebase/Article/{0}", knowledgebaseArticleRequest.Id);
+            const string parameters = "subject=Subject&contents=Contents&articlestatus=1&isfeatured=0&allowcomments=1&categoryid=1,2,3&editedstaffid=3";
 
-		[Test]
-		public void UpdateKnowledgebaseArticle()
-		{
-			var knowledgebaseArticleRequest = new KnowledgebaseArticleRequest
-			{
-				Id = 1,
-				EditedStaffId = 3,
-				Subject = "Subject",
-				Contents = "Contents",
-				ArticleStatus = KnowledgebaseArticleStatus.Published,
-				IsFeatured = false,
-				AllowComments = true,
-				CategoryIds = new [] { 1, 2, 3 }
-			};
+            this.kayakoApiRequest.Setup(x => x.ExecutePut<KnowledgebaseArticleCollection>(apiMethod, parameters)).Returns(this.responseKnowledgebaseArticleCollection);
 
-			string apiMethod = string.Format("/Knowledgebase/Article/{0}", knowledgebaseArticleRequest.Id);
-			const string parameters = "subject=Subject&contents=Contents&articlestatus=1&isfeatured=0&allowcomments=1&categoryid=1,2,3&editedstaffid=3";
+            var knowledgebaseArticle = this.knowledgebaseController.UpdateKnowledgebaseArticle(knowledgebaseArticleRequest);
 
-			_kayakoApiRequest.Setup(x => x.ExecutePut<KnowledgebaseArticleCollection>(apiMethod, parameters)).Returns(_responseKnowledgebaseArticleCollection);
+            this.kayakoApiRequest.Verify(x => x.ExecutePut<KnowledgebaseArticleCollection>(apiMethod, parameters), Times.Once());
+            Assert.That(knowledgebaseArticle, Is.EqualTo(this.responseKnowledgebaseArticleCollection.FirstOrDefault()));
+        }
 
-			var knowledgebaseArticle = _knowledgebaseController.UpdateKnowledgebaseArticle(knowledgebaseArticleRequest);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void DeleteKnowledgebaseArticle(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Article/{0}", knowledgebaseArticleId);
 
-			_kayakoApiRequest.Verify(x => x.ExecutePut<KnowledgebaseArticleCollection>(apiMethod, parameters), Times.Once());
-			Assert.That(knowledgebaseArticle, Is.EqualTo(_responseKnowledgebaseArticleCollection.FirstOrDefault()));
-		}
+            this.kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(true);
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void DeleteKnowledgebaseArticle(int knowledgebaseArticleId)
-		{
-			string apiMethod = string.Format("/Knowledgebase/Article/{0}", knowledgebaseArticleId);
+            var deleteSuccess = this.knowledgebaseController.DeleteKnowledgebaseArticle(knowledgebaseArticleId);
 
-			_kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(true);
+            this.kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod), Times.Once());
 
-			var deleteSuccess = _knowledgebaseController.DeleteKnowledgebaseArticle(knowledgebaseArticleId);
+            Assert.IsTrue(deleteSuccess);
+        }
 
-			_kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod), Times.Once());
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetKnowledgebaseCommentsForArticle(int articleId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Comment/ListAll/{0}", articleId);
 
-			Assert.IsTrue(deleteSuccess);
-		}
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod)).Returns(this.responseKnowledgebaseCommentCollection);
 
-		#endregion
+            var knowledgebaseComments = this.knowledgebaseController.GetKnowledgebaseComments(articleId);
 
-		#region Knowledgebase Comment Methods
-		
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void GetKnowledgebaseCommentsForArticle(int articleId)
-		{
-			string apiMethod = String.Format("/Knowledgebase/Comment/ListAll/{0}", articleId);
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod), Times.Once());
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod)).Returns(_responseKnowledgebaseCommentCollection);
+            Assert.That(knowledgebaseComments, Is.EqualTo(this.responseKnowledgebaseCommentCollection));
+        }
 
-			var knowledgebaseComments = _knowledgebaseController.GetKnowledgebaseComments(articleId);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetKnowledgebaseCommentById(int commentId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Comment/{0}", commentId);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod), Times.Once());
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod)).Returns(this.responseKnowledgebaseCommentCollection);
 
-			Assert.That(knowledgebaseComments, Is.EqualTo(_responseKnowledgebaseCommentCollection));
-		}
+            var knowledgebaseComment = this.knowledgebaseController.GetKnowledgebaseComment(commentId);
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void GetKnowledgebaseCommentById(int commentId)
-		{
-			string apiMethod = String.Format("/Knowledgebase/Comment/{0}", commentId);
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod), Times.Once());
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod)).Returns(_responseKnowledgebaseCommentCollection);
+            Assert.That(knowledgebaseComment, Is.EqualTo(this.responseKnowledgebaseCommentCollection.First()));
+        }
 
-			var knowledgebaseComment = _knowledgebaseController.GetKnowledgebaseComment(commentId);
+        [Test]
+        public void CreateKnowledgebaseComment()
+        {
+            var knowledgebaseCommentRequest = new KnowledgebaseCommentRequest
+            {
+                KnowledgebaseArticleId = 1,
+                Contents = "Contents",
+                CreatorType = KnowledgebaseCommentCreatorType.User,
+                CreatorId = 3,
+                Email = "email@domain.com",
+                ParentCommentId = 1
+            };
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod), Times.Once());
+            const string apiMethod = "/Knowledgebase/Comment";
+            const string parameters = "knowledgebasearticleid=1&contents=Contents&creatortype=2&creatorid=3&email=email@domain.com&parentcommentid=1";
 
-			Assert.That(knowledgebaseComment, Is.EqualTo(_responseKnowledgebaseCommentCollection.First()));
-		}
+            this.kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseCommentCollection>(apiMethod, parameters)).Returns(this.responseKnowledgebaseCommentCollection);
 
-		[Test]
-		public void CreateKnowledgebaseComment()
-		{
-			var knowledgebaseCommentRequest = new KnowledgebaseCommentRequest
-				{
-					KnowledgebaseArticleId = 1,
-					Contents = "Contents",
-					CreatorType = KnowledgebaseCommentCreatorType.User,
-					CreatorId = 3,
-					Email = "email@domain.com",
-					ParentCommentId = 1
-				};
+            var knowledgebaseComment = this.knowledgebaseController.CreateKnowledgebaseComment(knowledgebaseCommentRequest);
 
-			const string apiMethod = "/Knowledgebase/Comment";
-			const string parameters = "knowledgebasearticleid=1&contents=Contents&creatortype=2&creatorid=3&email=email@domain.com&parentcommentid=1";
+            this.kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseCommentCollection>(apiMethod, parameters), Times.Once());
+            Assert.That(knowledgebaseComment, Is.EqualTo(this.responseKnowledgebaseCommentCollection.First()));
+        }
 
-			_kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseCommentCollection>(apiMethod, parameters)).Returns(_responseKnowledgebaseCommentCollection);
+        [TestCase(1, true)]
+        [TestCase(2, false)]
+        [TestCase(3, true)]
+        public void DeleteKnowledgebaseComment(int commentId, bool success)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Comment/{0}", commentId);
 
-			var knowledgebaseComment = _knowledgebaseController.CreateKnowledgebaseComment(knowledgebaseCommentRequest);
+            this.kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(success);
 
-			_kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseCommentCollection>(apiMethod, parameters), Times.Once());
-			Assert.That(knowledgebaseComment, Is.EqualTo(_responseKnowledgebaseCommentCollection.First()));
-		}
+            var deleteSuccess = this.knowledgebaseController.DeleteKnowledgebaseComment(commentId);
 
-		[TestCase(1, true)]
-		[TestCase(2, false)]
-		[TestCase(3, true)]
-		public void DeleteKnowledgebaseComment(int commentId, bool success)
-		{
-			string apiMethod = string.Format("/Knowledgebase/Comment/{0}", commentId);
+            this.kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod));
 
-			_kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(success);
+            Assert.That(deleteSuccess, Is.EqualTo(success));
+        }
 
-			var deleteSuccess = _knowledgebaseController.DeleteKnowledgebaseComment(commentId);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetKnowledgebaseAttachments(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Attachment/ListAll/{0}", knowledgebaseArticleId);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod));
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod)).Returns(this.responseKnowledgebaseAttachmentCollection);
 
-			Assert.That(deleteSuccess, Is.EqualTo(success));
-		}
+            var knowledgebaseAttachments = this.knowledgebaseController.GetKnowledgebaseAttachments(knowledgebaseArticleId);
 
-		#endregion
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod));
 
-		#region Knowledgebase Attachment Methods
+            Assert.That(knowledgebaseAttachments, Is.EqualTo(this.responseKnowledgebaseAttachmentCollection));
+        }
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void GetKnowledgebaseAttachments(int knowledgebaseArticleId)
-		{
-			string apiMethod = String.Format("/Knowledgebase/Attachment/ListAll/{0}", knowledgebaseArticleId);
+        [TestCase(1, 2)]
+        [TestCase(3, 4)]
+        [TestCase(5, 6)]
+        public void GetKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Attachment/{0}/{1}", knowledgebaseArticleId, knowledgebaseAttachmentId);
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod)).Returns(_responseKnowledgebaseAttachmentCollection);
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod)).Returns(this.responseKnowledgebaseAttachmentCollection);
 
-			var knowledgebaseAttachments = _knowledgebaseController.GetKnowledgebaseAttachments(knowledgebaseArticleId);
+            var knowledgebaseAttachment = this.knowledgebaseController.GetKnowledgebaseAttachment(knowledgebaseArticleId, knowledgebaseAttachmentId);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod));
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod));
 
-			Assert.That(knowledgebaseAttachments, Is.EqualTo(_responseKnowledgebaseAttachmentCollection));
-		}
+            Assert.That(knowledgebaseAttachment, Is.EqualTo(this.responseKnowledgebaseAttachmentCollection.First()));
+        }
 
-		[TestCase(1, 2)]
-		[TestCase(3, 4)]
-		[TestCase(5, 6)]
-		public void GetKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId)
-		{
-			string apiMethod = String.Format("/Knowledgebase/Attachment/{0}/{1}", knowledgebaseArticleId, knowledgebaseAttachmentId);
+        [Test]
+        public void CreateKnowledgebaseAttachement()
+        {
+            var contents = Convert.ToBase64String(Encoding.UTF8.GetBytes("This is the contents"));
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod)).Returns(_responseKnowledgebaseAttachmentCollection);
+            var knowledgebaseAttachmentRequest = new KnowledgebaseAttachmentRequest
+            {
+                KnowledgebaseArticleId = 1,
+                FileName = "fileName",
+                Contents = contents
+            };
 
-			var knowledgebaseAttachment = _knowledgebaseController.GetKnowledgebaseAttachment(knowledgebaseArticleId, knowledgebaseAttachmentId);
+            const string apiMethod = "/Knowledgebase/Attachment";
+            var parameters = string.Format("kbarticleid=1&filename=fileName&contents={0}", contents);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod));
+            this.kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseAttachmentCollection>(apiMethod, parameters)).Returns(this.responseKnowledgebaseAttachmentCollection);
 
-			Assert.That(knowledgebaseAttachment, Is.EqualTo(_responseKnowledgebaseAttachmentCollection.First()));
-		}
+            var knowledgebaseAttachment = this.knowledgebaseController.CreateKnowledgebaseAttachment(knowledgebaseAttachmentRequest);
 
-		[Test]
-		public void CreateKnowledgebaseAttachement()
-		{
-			string contents = Convert.ToBase64String(Encoding.UTF8.GetBytes("This is the contents"));
+            this.kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseAttachmentCollection>(apiMethod, parameters));
 
-			var knowledgebaseAttachmentRequest = new KnowledgebaseAttachmentRequest
-				{
-					KnowledgebaseArticleId = 1,
-					FileName = "fileName",
-					Contents = contents
-				};
+            Assert.That(knowledgebaseAttachment, Is.EqualTo(this.responseKnowledgebaseAttachmentCollection.First()));
+        }
 
-			const string apiMethod = "/Knowledgebase/Attachment";
-			var parameters = string.Format("kbarticleid=1&filename=fileName&contents={0}", contents);
+        [TestCase(1, 2, true)]
+        [TestCase(3, 4, false)]
+        [TestCase(5, 6, true)]
+        public void DeleteKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId, bool success)
+        {
+            var apiMethod = string.Format("/Knowledgebase/Attachment/{0}/{1}", knowledgebaseArticleId, knowledgebaseAttachmentId);
 
-			_kayakoApiRequest.Setup(x => x.ExecutePost<KnowledgebaseAttachmentCollection>(apiMethod, parameters)).Returns(_responseKnowledgebaseAttachmentCollection);
+            this.kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(success);
 
-			var knowledgebaseAttachment = _knowledgebaseController.CreateKnowledgebaseAttachment(knowledgebaseAttachmentRequest);
+            var deleteSuccess = this.knowledgebaseController.DeleteKnowledgebaseAttachment(knowledgebaseArticleId, knowledgebaseAttachmentId);
 
-			_kayakoApiRequest.Verify(x => x.ExecutePost<KnowledgebaseAttachmentCollection>(apiMethod, parameters));
+            this.kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod));
 
-			Assert.That(knowledgebaseAttachment, Is.EqualTo(_responseKnowledgebaseAttachmentCollection.First()));
-		}
-
-		[TestCase(1, 2, true)]
-		[TestCase(3, 4, false)]
-		[TestCase(5, 6, true)]
-		public void DeleteKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId, bool success)
-		{
-			var apiMethod = string.Format("/Knowledgebase/Attachment/{0}/{1}", knowledgebaseArticleId, knowledgebaseAttachmentId);
-
-			_kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(success);
-
-			var deleteSuccess = _knowledgebaseController.DeleteKnowledgebaseAttachment(knowledgebaseArticleId, knowledgebaseAttachmentId);
-
-			_kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod));
-
-			Assert.That(deleteSuccess, Is.EqualTo(success));
-		}
-
-		#endregion
-	}
+            Assert.That(deleteSuccess, Is.EqualTo(success));
+        }
+    }
 }

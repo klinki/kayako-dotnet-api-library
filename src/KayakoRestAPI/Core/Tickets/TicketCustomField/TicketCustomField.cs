@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
 using KayakoRestApi.Core.Constants;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketCustomField
 {
     [XmlRoot("field")]
     public class TicketCustomField
@@ -9,11 +9,11 @@ namespace KayakoRestApi.Core.Tickets
         [XmlAttribute("id")]
         public int Id { get; set; }
 
-		[XmlAttribute("type")]
-		public TicketCustomFieldType Type { get; set; }
+        [XmlAttribute("type")]
+        public TicketCustomFieldType Type { get; set; }
 
-		[XmlAttribute("name")]
-		public string Name { get; set; }
+        [XmlAttribute("name")]
+        public string Name { get; set; }
 
         [XmlAttribute("title")]
         public string Title { get; set; }

@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace KayakoRestApi.RequestBase
+namespace KayakoRestApi.RequestBase.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Property)]
     internal sealed class EitherFieldAttribute : Attribute
     {
-        public string[] DependsOn { get; set; }
-
         /// <param name="dependsOn">Pipe separated list of dependant properties</param>
-        public EitherFieldAttribute(string dependsOn)
-        {
-            DependsOn = dependsOn.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-        }
+        public EitherFieldAttribute(string dependsOn) => this.DependsOn = dependsOn.Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-        public EitherFieldAttribute(string[] dependsOn)
-        {
-            DependsOn = dependsOn;
-        }
+        public EitherFieldAttribute(string[] dependsOn) => this.DependsOn = dependsOn;
+
+        public string[] DependsOn { get; }
     }
 }

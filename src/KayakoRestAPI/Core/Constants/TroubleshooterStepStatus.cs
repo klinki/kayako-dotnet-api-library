@@ -2,12 +2,12 @@
 
 namespace KayakoRestApi.Core.Constants
 {
-	public enum TroubleshooterStepStatus
-	{
-		[XmlEnum("1")]
-		Published,
+    public enum TroubleshooterStepStatus
+    {
+        [XmlEnum("1")]
+        Published,
 
-		[XmlEnum("2")]
-		Draft
-	}
+        [XmlEnum("2")]
+        Draft
+    }
 }

@@ -3,79 +3,75 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using KayakoRestApi.Core.Constants;
 using KayakoRestApi.Core.Departments;
+using KayakoRestApi.IntegrationTests.TestBase;
 using NUnit.Framework;
 
 namespace KayakoRestApi.IntegrationTests
 {
-	[TestFixture(Description = "A set of tests testing Api methods around Departments")]
-	public class DepartmentTests : UnitTestBase
-	{
-        private Department TestData
-        {
-            get
+    [TestFixture(Description = "A set of tests testing Api methods around Departments")]
+    public class DepartmentTests : UnitTestBase
+    {
+        private static Department TestData
+            => new Department
             {
-                Department d = new Department();
-                d.Title = "Test Department";
-                d.Type = DepartmentType.Public;
-				d.Module = DepartmentModule.Tickets;
-                d.DisplayOrder = 16;
-                d.ParentDepartmentId = 0;
-                d.UserVisibilityCustom = true;
-                d.UserGroups = new List<int>() { 1, 2, 3 };
+                Title = "Test Department",
+                Type = DepartmentType.Public,
+                Module = DepartmentModule.Tickets,
+                DisplayOrder = 16,
+                ParentDepartmentId = 0,
+                UserVisibilityCustom = true,
+                UserGroups = new List<int> { 1, 2, 3 }
+            };
 
-                return d;
-            }
+        [Test]
+        public void GetAllDepartments()
+        {
+            var departments = TestSetup.KayakoApiService.Departments.GetDepartments();
+
+            Assert.IsNotNull(departments, "No departments were returned");
+            Assert.IsNotEmpty(departments, "No departments were returned");
         }
 
-		[Test]
-		public void GetAllDepartments()
-		{
-			DepartmentCollection departments = TestSetup.KayakoApiService.Departments.GetDepartments();
+        [Test]
+        public void GetDepartment()
+        {
+            var departments = TestSetup.KayakoApiService.Departments.GetDepartments();
 
-			Assert.IsNotNull(departments, "No departments were returned");
-			Assert.IsNotEmpty(departments, "No departments were returned");
-		}
+            Assert.IsNotNull(departments, "No departments were returned");
+            Assert.IsNotEmpty(departments, "No departments were returned");
 
-		[Test]
-		public void GetDepartment()
-		{
-			DepartmentCollection departments = TestSetup.KayakoApiService.Departments.GetDepartments();
+            var deptToGet = departments[new Random().Next(departments.Count)];
 
-			Assert.IsNotNull(departments, "No departments were returned");
-			Assert.IsNotEmpty(departments, "No departments were returned");
+            Trace.WriteLine("GetDepartment using department id: " + deptToGet.Id);
 
-			Department deptToGet = departments[new Random().Next(departments.Count)];
+            var dept = TestSetup.KayakoApiService.Departments.GetDepartment(deptToGet.Id);
 
-			Trace.WriteLine("GetDepartment using department id: " + deptToGet.Id);
+            this.CompareDepartments(dept, deptToGet);
+        }
 
-			Department dept = TestSetup.KayakoApiService.Departments.GetDepartment(deptToGet.Id);
-
-			CompareDepartments(dept, deptToGet);
-		}
-
-        [Test(Description="Tests creating, updating and deleting departments")]
+        [Test(Description = "Tests creating, updating and deleting departments")]
         public void CreateUpdateDeleteDepartment()
         {
-	        Department dummyData = TestData;
+            var dummyData = TestData;
 
-            Department createdDept = TestSetup.KayakoApiService.Departments.CreateDepartment(DepartmentRequest.FromResponseData(dummyData));
+            var createdDept = TestSetup.KayakoApiService.Departments.CreateDepartment(DepartmentRequest.FromResponseData(dummyData));
 
             Assert.IsNotNull(createdDept);
             dummyData.Id = createdDept.Id;
-            CompareDepartments(dummyData, createdDept);
+            this.CompareDepartments(dummyData, createdDept);
 
             dummyData.Title = "Updated Title";
-			dummyData.Type = DepartmentType.Private;
+            dummyData.Type = DepartmentType.Private;
             dummyData.DisplayOrder = 34;
             dummyData.UserVisibilityCustom = false;
             dummyData.UserGroups = new List<int>();
 
-			Department updatedDept = TestSetup.KayakoApiService.Departments.UpdateDepartment(DepartmentRequest.FromResponseData(dummyData));
+            var updatedDept = TestSetup.KayakoApiService.Departments.UpdateDepartment(DepartmentRequest.FromResponseData(dummyData));
 
             Assert.IsNotNull(updatedDept);
-            CompareDepartments(dummyData, updatedDept);
+            this.CompareDepartments(dummyData, updatedDept);
 
-            bool success = TestSetup.KayakoApiService.Departments.DeleteDepartment(updatedDept.Id);
+            var success = TestSetup.KayakoApiService.Departments.DeleteDepartment(updatedDept.Id);
 
             Assert.IsTrue(success);
         }
@@ -91,7 +87,7 @@ namespace KayakoRestApi.IntegrationTests
             Assert.AreEqual(one.UserVisibilityCustom, two.UserVisibilityCustom);
             Assert.AreEqual(one.UserGroups, two.UserGroups);
 
-			AssertObjectXmlEqual<Department>(one, two);
+            AssertObjectXmlEqual(one, two);
         }
-	}
+    }
 }

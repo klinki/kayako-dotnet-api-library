@@ -1,390 +1,376 @@
-﻿using System;
-using System.Net;
-using KayakoRestApi.Core.News;
-using KayakoRestApi.Data;
-using KayakoRestApi.Net;
+﻿using System.Net;
 using KayakoRestApi.Core.Troubleshooter;
+using KayakoRestApi.Net;
 using KayakoRestApi.RequestBase;
 using KayakoRestApi.Text;
+using KayakoRestApi.Utilities;
 
 namespace KayakoRestApi.Controllers
 {
-	public interface ITroubleshooterController
-	{
-		TroubleshooterCategoryCollection GetTroubleshooterCategories();
+    public interface ITroubleshooterController
+    {
+        TroubleshooterCategoryCollection GetTroubleshooterCategories();
 
-		TroubleshooterCategory GetTroubleshooterCategory(int troubleshooterCategoryId);
+        TroubleshooterCategory GetTroubleshooterCategory(int troubleshooterCategoryId);
 
-		TroubleshooterCategory CreateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest);
+        TroubleshooterCategory CreateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest);
 
-		TroubleshooterCategory UpdateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest);
+        TroubleshooterCategory UpdateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest);
 
-		bool DeleteTroubleshooterCategory(int troubleshooterCategoryId);
+        bool DeleteTroubleshooterCategory(int troubleshooterCategoryId);
 
-		TroubleshooterStepCollection GetTroubleshooterSteps();
+        TroubleshooterStepCollection GetTroubleshooterSteps();
 
-		TroubleshooterStep GetTroubleshooterStep(int troubleshooterStepId);
+        TroubleshooterStep GetTroubleshooterStep(int troubleshooterStepId);
 
-		TroubleshooterStep CreateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest);
+        TroubleshooterStep CreateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest);
 
-		TroubleshooterStep UpdateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest);
+        TroubleshooterStep UpdateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest);
 
-		bool DeleteTroubleshooterStep(int troubleshooterStepId);
+        bool DeleteTroubleshooterStep(int troubleshooterStepId);
 
-		TroubleshooterCommentCollection GetTroubleshooterComments(int troubleshooterStepId);
+        TroubleshooterCommentCollection GetTroubleshooterComments(int troubleshooterStepId);
 
-		TroubleshooterComment GetTroubleshooterComment(int troubleshooterCommentId);
+        TroubleshooterComment GetTroubleshooterComment(int troubleshooterCommentId);
 
-		TroubleshooterComment CreateTroubleshooterComment(TroubleshooterCommentRequest troubleshooterCommentRequest);
+        TroubleshooterComment CreateTroubleshooterComment(TroubleshooterCommentRequest troubleshooterCommentRequest);
 
-		bool DeleteTroubleshooterComment(int troubleshooterCommentId);
+        bool DeleteTroubleshooterComment(int troubleshooterCommentId);
 
-		TroubleshooterAttachmentCollection GetTroubleshooterAttachments(int troubleshooterStepId);
+        TroubleshooterAttachmentCollection GetTroubleshooterAttachments(int troubleshooterStepId);
 
-		TroubleshooterAttachment GetTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId);
+        TroubleshooterAttachment GetTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId);
 
-		TroubleshooterAttachment CreateTroubleshooterAttachment(TroubleshooterAttachmentRequest troubleshooterAttachmentRequest);
+        TroubleshooterAttachment CreateTroubleshooterAttachment(TroubleshooterAttachmentRequest troubleshooterAttachmentRequest);
 
-		bool DeleteTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId);
-	}
+        bool DeleteTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId);
+    }
 
-	public sealed class TroubleshooterController : BaseController, ITroubleshooterController
-	{
+    public sealed class TroubleshooterController : BaseController, ITroubleshooterController
+    {
+        private const string TroubleshooterCategoryBaseUrl = "/Troubleshooter/Category";
+        private const string TroubleshooterStepBaseUrl = "/Troubleshooter/Step";
+        private const string TroubleshooterCommentBaseUrl = "/Troubleshooter/Comment";
+        private const string TroubleshooterAttachmentBaseUrl = "/Troubleshooter/Attachment";
+
         public TroubleshooterController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
-            : base(apiKey, secretKey, apiUrl, proxy)
-        {
-        }
+            : base(apiKey, secretKey, apiUrl, proxy) { }
 
         public TroubleshooterController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
-			: base(apiKey, secretKey, apiUrl, proxy, requestType)
-		{
-		}
+            : base(apiKey, secretKey, apiUrl, proxy, requestType) { }
 
-        public TroubleshooterController(IKayakoApiRequest kayakoApiRequest) 
-			: base(kayakoApiRequest)
-		{
-		}
+        public TroubleshooterController(IKayakoApiRequest kayakoApiRequest)
+            : base(kayakoApiRequest) { }
 
-		private const string TroubleshooterCategoryBaseUrl = "/Troubleshooter/Category";
-		private const string TroubleshooterStepBaseUrl = "/Troubleshooter/Step";
-		private const string TroubleshooterCommentBaseUrl = "/Troubleshooter/Comment";
-		private const string TroubleshooterAttachmentBaseUrl = "/Troubleshooter/Attachment";
+        #region Troubleshooter Category Methods
 
-		#region Troubleshooter Category Methods
+        public TroubleshooterCategoryCollection GetTroubleshooterCategories() => this.Connector.ExecuteGet<TroubleshooterCategoryCollection>(TroubleshooterCategoryBaseUrl);
 
-		public TroubleshooterCategoryCollection GetTroubleshooterCategories()
-		{
-			return Connector.ExecuteGet<TroubleshooterCategoryCollection>(TroubleshooterCategoryBaseUrl);
-		}
+        public TroubleshooterCategory GetTroubleshooterCategory(int troubleshooterCategoryId)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterCategoryBaseUrl, troubleshooterCategoryId);
 
-		public TroubleshooterCategory GetTroubleshooterCategory(int troubleshooterCategoryId)
-		{
-			string apiMethod = String.Format("{0}/{1}", TroubleshooterCategoryBaseUrl, troubleshooterCategoryId);
+            var troubleshooterCategories = this.Connector.ExecuteGet<TroubleshooterCategoryCollection>(apiMethod);
 
-			TroubleshooterCategoryCollection troubleshooterCategories = Connector.ExecuteGet<TroubleshooterCategoryCollection>(apiMethod);
+            if (troubleshooterCategories != null && troubleshooterCategories.Count > 0)
+            {
+                return troubleshooterCategories[0];
+            }
 
-			if (troubleshooterCategories != null && troubleshooterCategories.Count > 0)
-			{
-				return troubleshooterCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public TroubleshooterCategory CreateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest)
+        {
+            var parameters = this.PopulateRequestParameters(troubleshooterCategoryRequest, RequestTypes.Create);
 
-		public TroubleshooterCategory CreateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(troubleshooterCategoryRequest, RequestTypes.Create);
+            var troubleshooterCategories = this.Connector.ExecutePost<TroubleshooterCategoryCollection>(TroubleshooterCategoryBaseUrl, parameters.ToString());
 
-			TroubleshooterCategoryCollection troubleshooterCategories = Connector.ExecutePost<TroubleshooterCategoryCollection>(TroubleshooterCategoryBaseUrl, parameters.ToString());
+            if (troubleshooterCategories != null && troubleshooterCategories.Count > 0)
+            {
+                return troubleshooterCategories[0];
+            }
 
-			if (troubleshooterCategories != null && troubleshooterCategories.Count > 0)
-			{
-				return troubleshooterCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public TroubleshooterCategory UpdateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterCategoryBaseUrl, troubleshooterCategoryRequest.Id);
+            var parameters = this.PopulateRequestParameters(troubleshooterCategoryRequest, RequestTypes.Update);
 
-		public TroubleshooterCategory UpdateTroubleshooterCategory(TroubleshooterCategoryRequest troubleshooterCategoryRequest)
-		{
-			string apiMethod = String.Format("{0}/{1}", TroubleshooterCategoryBaseUrl, troubleshooterCategoryRequest.Id);
-			RequestBodyBuilder parameters = PopulateRequestParameters(troubleshooterCategoryRequest, RequestTypes.Update);
+            var troubleshooterCategories = this.Connector.ExecutePut<TroubleshooterCategoryCollection>(apiMethod, parameters.ToString());
 
-			TroubleshooterCategoryCollection troubleshooterCategories = Connector.ExecutePut<TroubleshooterCategoryCollection>(apiMethod, parameters.ToString());
+            if (troubleshooterCategories != null && troubleshooterCategories.Count > 0)
+            {
+                return troubleshooterCategories[0];
+            }
 
-			if (troubleshooterCategories != null && troubleshooterCategories.Count > 0)
-			{
-				return troubleshooterCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public bool DeleteTroubleshooterCategory(int troubleshooterCategoryId)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterCategoryBaseUrl, troubleshooterCategoryId);
 
-		public bool DeleteTroubleshooterCategory(int troubleshooterCategoryId)
-		{
-			string apiMethod = String.Format("{0}/{1}", TroubleshooterCategoryBaseUrl, troubleshooterCategoryId);
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+        private RequestBodyBuilder PopulateRequestParameters(TroubleshooterCategoryRequest troubleshooterCategoryRequest, RequestTypes requestType)
+        {
+            troubleshooterCategoryRequest.EnsureValidData(requestType);
 
-		private RequestBodyBuilder PopulateRequestParameters(TroubleshooterCategoryRequest troubleshooterCategoryRequest, RequestTypes requestType)
-		{
-			troubleshooterCategoryRequest.EnsureValidData(requestType);
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonEmptyString("title", troubleshooterCategoryRequest.Title);
+            parameters.AppendRequestData("categorytype", EnumUtility.ToApiString(troubleshooterCategoryRequest.CategoryType));
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonEmptyString("title", troubleshooterCategoryRequest.Title);
-			parameters.AppendRequestData("categorytype", EnumUtility.ToApiString(troubleshooterCategoryRequest.CategoryType));
+            if (requestType == RequestTypes.Create)
+            {
+                parameters.AppendRequestDataNonNegativeInt("staffid", troubleshooterCategoryRequest.StaffId);
+            }
 
-			if (requestType == RequestTypes.Create)
-			{
-				parameters.AppendRequestDataNonNegativeInt("staffid", troubleshooterCategoryRequest.StaffId);
-			}
+            if (troubleshooterCategoryRequest.DisplayOrder.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("displayorder", troubleshooterCategoryRequest.DisplayOrder.Value);
+            }
 
-			if (troubleshooterCategoryRequest.DisplayOrder.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("displayorder", troubleshooterCategoryRequest.DisplayOrder.Value);
-			}
+            parameters.AppendRequestDataNonEmptyString("description", troubleshooterCategoryRequest.Description);
+            parameters.AppendRequestDataBool("uservisibilitycustom", troubleshooterCategoryRequest.UserVisibilityCustom);
+            parameters.AppendRequestDataArrayCommaSeparated("usergroupidlist", troubleshooterCategoryRequest.UserGroupIdList);
+            parameters.AppendRequestDataBool("staffvisibilitycustom", troubleshooterCategoryRequest.StaffVisibilityCustom);
+            parameters.AppendRequestDataArrayCommaSeparated("staffgroupidlist", troubleshooterCategoryRequest.StaffGroupIdList);
 
-			parameters.AppendRequestDataNonEmptyString("description", troubleshooterCategoryRequest.Description);
-			parameters.AppendRequestDataBool("uservisibilitycustom", troubleshooterCategoryRequest.UserVisibilityCustom);
-			parameters.AppendRequestDataArrayCommaSeparated("usergroupidlist", troubleshooterCategoryRequest.UserGroupIdList);
-			parameters.AppendRequestDataBool("staffvisibilitycustom", troubleshooterCategoryRequest.StaffVisibilityCustom);
-			parameters.AppendRequestDataArrayCommaSeparated("staffgroupidlist", troubleshooterCategoryRequest.StaffGroupIdList);
+            return parameters;
+        }
 
-			return parameters;
-		}
+        #endregion
 
-		#endregion
+        #region Troubleshooter Step Methods
 
-		#region Troubleshooter Step Methods
+        public TroubleshooterStepCollection GetTroubleshooterSteps() => this.Connector.ExecuteGet<TroubleshooterStepCollection>(TroubleshooterStepBaseUrl);
 
-		public TroubleshooterStepCollection GetTroubleshooterSteps()
-		{
-			return Connector.ExecuteGet<TroubleshooterStepCollection>(TroubleshooterStepBaseUrl);
-		}
+        public TroubleshooterStep GetTroubleshooterStep(int troubleshooterStepId)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterStepBaseUrl, troubleshooterStepId);
 
-		public TroubleshooterStep GetTroubleshooterStep(int troubleshooterStepId)
-		{
-			string apiMethod = String.Format("{0}/{1}", TroubleshooterStepBaseUrl, troubleshooterStepId);
+            var troubleshooterSteps = this.Connector.ExecuteGet<TroubleshooterStepCollection>(apiMethod);
 
-			TroubleshooterStepCollection troubleshooterSteps = Connector.ExecuteGet<TroubleshooterStepCollection>(apiMethod);
+            if (troubleshooterSteps != null && troubleshooterSteps.Count > 0)
+            {
+                return troubleshooterSteps[0];
+            }
 
-			if (troubleshooterSteps != null && troubleshooterSteps.Count > 0)
-			{
-				return troubleshooterSteps[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public TroubleshooterStep CreateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest)
+        {
+            var parameters = this.PopulateRequestParameters(troubleshooterStepRequest, RequestTypes.Create);
 
-		public TroubleshooterStep CreateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(troubleshooterStepRequest, RequestTypes.Create);
+            var troubleshooterSteps = this.Connector.ExecutePost<TroubleshooterStepCollection>(TroubleshooterStepBaseUrl, parameters.ToString());
 
-			TroubleshooterStepCollection troubleshooterSteps = Connector.ExecutePost<TroubleshooterStepCollection>(TroubleshooterStepBaseUrl, parameters.ToString());
+            if (troubleshooterSteps != null && troubleshooterSteps.Count > 0)
+            {
+                return troubleshooterSteps[0];
+            }
 
-			if (troubleshooterSteps != null && troubleshooterSteps.Count > 0)
-			{
-				return troubleshooterSteps[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public TroubleshooterStep UpdateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterStepBaseUrl, troubleshooterStepRequest.Id);
+            var parameters = this.PopulateRequestParameters(troubleshooterStepRequest, RequestTypes.Update);
 
-		public TroubleshooterStep UpdateTroubleshooterStep(TroubleshooterStepRequest troubleshooterStepRequest)
-		{
-			string apiMethod = String.Format("{0}/{1}", TroubleshooterStepBaseUrl, troubleshooterStepRequest.Id);
-			RequestBodyBuilder parameters = PopulateRequestParameters(troubleshooterStepRequest, RequestTypes.Update);
+            var troubleshooterStep = this.Connector.ExecutePut<TroubleshooterStepCollection>(apiMethod, parameters.ToString());
 
-			TroubleshooterStepCollection troubleshooterStep = Connector.ExecutePut<TroubleshooterStepCollection>(apiMethod, parameters.ToString());
+            if (troubleshooterStep != null && troubleshooterStep.Count > 0)
+            {
+                return troubleshooterStep[0];
+            }
 
-			if (troubleshooterStep != null && troubleshooterStep.Count > 0)
-			{
-				return troubleshooterStep[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public bool DeleteTroubleshooterStep(int troubleshooterStepId)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterStepBaseUrl, troubleshooterStepId);
 
-		public bool DeleteTroubleshooterStep(int troubleshooterStepId)
-		{
-			string apiMethod = string.Format("{0}/{1}", TroubleshooterStepBaseUrl, troubleshooterStepId);
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+        private RequestBodyBuilder PopulateRequestParameters(TroubleshooterStepRequest troubleshooterStepRequest, RequestTypes requestType)
+        {
+            troubleshooterStepRequest.EnsureValidData(requestType);
 
-		private RequestBodyBuilder PopulateRequestParameters(TroubleshooterStepRequest troubleshooterStepRequest, RequestTypes requestType)
-		{
-			troubleshooterStepRequest.EnsureValidData(requestType);
+            var parameters = new RequestBodyBuilder();
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
+            if (requestType == RequestTypes.Create)
+            {
+                parameters.AppendRequestData("categoryid", troubleshooterStepRequest.CategoryId);
+            }
 
-			if (requestType == RequestTypes.Create)
-			{
-				parameters.AppendRequestData("categoryid", troubleshooterStepRequest.CategoryId);
-			}
+            parameters.AppendRequestDataNonEmptyString("subject", troubleshooterStepRequest.Subject);
+            parameters.AppendRequestDataNonEmptyString("contents", troubleshooterStepRequest.Contents);
 
-			parameters.AppendRequestDataNonEmptyString("subject", troubleshooterStepRequest.Subject);
-			parameters.AppendRequestDataNonEmptyString("contents", troubleshooterStepRequest.Contents);
+            parameters.AppendRequestDataNonNegativeInt(requestType == RequestTypes.Create ? "staffid" : "editedstaffid",
+                troubleshooterStepRequest.StaffId);
 
-			parameters.AppendRequestDataNonNegativeInt(requestType == RequestTypes.Create ? "staffid" : "editedstaffid",
-			                                           troubleshooterStepRequest.StaffId);
+            if (troubleshooterStepRequest.DisplayOrder.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("displayorder", troubleshooterStepRequest.DisplayOrder.Value);
+            }
 
-			if (troubleshooterStepRequest.DisplayOrder.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("displayorder", troubleshooterStepRequest.DisplayOrder.Value);
-			}
+            parameters.AppendRequestDataBool("allowcomments", troubleshooterStepRequest.AllowComments);
+            parameters.AppendRequestDataBool("enableticketredirection", troubleshooterStepRequest.EnableTicketRedirection);
 
-			parameters.AppendRequestDataBool("allowcomments", troubleshooterStepRequest.AllowComments);
-			parameters.AppendRequestDataBool("enableticketredirection", troubleshooterStepRequest.EnableTicketRedirection);
+            if (troubleshooterStepRequest.RedirectDepartmentId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("redirectdepartmentid", troubleshooterStepRequest.RedirectDepartmentId.Value);
+            }
 
-			if (troubleshooterStepRequest.RedirectDepartmentId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("redirectdepartmentid", troubleshooterStepRequest.RedirectDepartmentId.Value);
-			}
+            if (troubleshooterStepRequest.TicketTypeId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("tickettypeid", troubleshooterStepRequest.TicketTypeId.Value);
+            }
 
-			if (troubleshooterStepRequest.TicketTypeId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("tickettypeid", troubleshooterStepRequest.TicketTypeId.Value);
-			}
+            if (troubleshooterStepRequest.TicketPriorityId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("ticketpriorityid", troubleshooterStepRequest.TicketPriorityId.Value);
+            }
 
-			if(troubleshooterStepRequest.TicketPriorityId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("ticketpriorityid", troubleshooterStepRequest.TicketPriorityId.Value);
-			}
+            parameters.AppendRequestDataNonEmptyString("ticketsubject", troubleshooterStepRequest.TicketSubject);
 
-			parameters.AppendRequestDataNonEmptyString("ticketsubject", troubleshooterStepRequest.TicketSubject);
-			
-			if (troubleshooterStepRequest.StepStatus.HasValue)
-			{
-				parameters.AppendRequestData("stepstatus", EnumUtility.ToApiString(troubleshooterStepRequest.StepStatus.Value));
-			}
+            if (troubleshooterStepRequest.StepStatus.HasValue)
+            {
+                parameters.AppendRequestData("stepstatus", EnumUtility.ToApiString(troubleshooterStepRequest.StepStatus.Value));
+            }
 
-			parameters.AppendRequestDataArrayCommaSeparated("parentstepidlist", troubleshooterStepRequest.ParentStepIdList);
+            parameters.AppendRequestDataArrayCommaSeparated("parentstepidlist", troubleshooterStepRequest.ParentStepIdList);
 
-			return parameters;
-		}
+            return parameters;
+        }
 
-		#endregion
+        #endregion
 
-		#region Troubleshooter Comment Methods
+        #region Troubleshooter Comment Methods
 
-		public TroubleshooterCommentCollection GetTroubleshooterComments(int troubleshooterStepId)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}", TroubleshooterCommentBaseUrl, troubleshooterStepId);
+        public TroubleshooterCommentCollection GetTroubleshooterComments(int troubleshooterStepId)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}", TroubleshooterCommentBaseUrl, troubleshooterStepId);
 
-			return Connector.ExecuteGet<TroubleshooterCommentCollection>(apiMethod);
-		}
+            return this.Connector.ExecuteGet<TroubleshooterCommentCollection>(apiMethod);
+        }
 
-		public TroubleshooterComment GetTroubleshooterComment(int troubleshooterCommentId)
-		{
-			string apiMethod = String.Format("{0}/{1}", TroubleshooterCommentBaseUrl, troubleshooterCommentId);
+        public TroubleshooterComment GetTroubleshooterComment(int troubleshooterCommentId)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterCommentBaseUrl, troubleshooterCommentId);
 
-			TroubleshooterCommentCollection troubleshooterComments = Connector.ExecuteGet<TroubleshooterCommentCollection>(apiMethod);
+            var troubleshooterComments = this.Connector.ExecuteGet<TroubleshooterCommentCollection>(apiMethod);
 
-			if (troubleshooterComments != null && troubleshooterComments.Count > 0)
-			{
-				return troubleshooterComments[0];
-			}
+            if (troubleshooterComments != null && troubleshooterComments.Count > 0)
+            {
+                return troubleshooterComments[0];
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public TroubleshooterComment CreateTroubleshooterComment(TroubleshooterCommentRequest troubleshooterCommentRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(troubleshooterCommentRequest, RequestTypes.Create);
+        public TroubleshooterComment CreateTroubleshooterComment(TroubleshooterCommentRequest troubleshooterCommentRequest)
+        {
+            var parameters = this.PopulateRequestParameters(troubleshooterCommentRequest, RequestTypes.Create);
 
-			TroubleshooterCommentCollection troubleshooterComments = Connector.ExecutePost<TroubleshooterCommentCollection>(TroubleshooterCommentBaseUrl, parameters.ToString());
+            var troubleshooterComments = this.Connector.ExecutePost<TroubleshooterCommentCollection>(TroubleshooterCommentBaseUrl, parameters.ToString());
 
-			if (troubleshooterComments != null && troubleshooterComments.Count > 0)
-			{
-				return troubleshooterComments[0];
-			}
+            if (troubleshooterComments != null && troubleshooterComments.Count > 0)
+            {
+                return troubleshooterComments[0];
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public bool DeleteTroubleshooterComment(int troubleshooterCommentId)
-		{
-			string apiMethod = string.Format("{0}/{1}", TroubleshooterCommentBaseUrl, troubleshooterCommentId);
+        public bool DeleteTroubleshooterComment(int troubleshooterCommentId)
+        {
+            var apiMethod = string.Format("{0}/{1}", TroubleshooterCommentBaseUrl, troubleshooterCommentId);
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-		private RequestBodyBuilder PopulateRequestParameters(TroubleshooterCommentRequest troubleshooterCommentRequest, RequestTypes requestType)
-		{
-			troubleshooterCommentRequest.EnsureValidData(requestType);
+        private RequestBodyBuilder PopulateRequestParameters(TroubleshooterCommentRequest troubleshooterCommentRequest, RequestTypes requestType)
+        {
+            troubleshooterCommentRequest.EnsureValidData(requestType);
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonNegativeInt("troubleshooterstepid", troubleshooterCommentRequest.TroubleshooterStepId);
-			parameters.AppendRequestDataNonEmptyString("contents", troubleshooterCommentRequest.Contents);
-			parameters.AppendRequestData("creatortype", EnumUtility.ToApiString(troubleshooterCommentRequest.CreatorType));
-			parameters.AppendRequestDataNonNegativeInt("creatorid", troubleshooterCommentRequest.CreatorId);
-			parameters.AppendRequestDataNonEmptyString("fullname", troubleshooterCommentRequest.FullName);
-			parameters.AppendRequestDataNonEmptyString("email", troubleshooterCommentRequest.Email);
-			parameters.AppendRequestDataNonNegativeInt("parentcommentid", troubleshooterCommentRequest.ParentCommentId);
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonNegativeInt("troubleshooterstepid", troubleshooterCommentRequest.TroubleshooterStepId);
+            parameters.AppendRequestDataNonEmptyString("contents", troubleshooterCommentRequest.Contents);
+            parameters.AppendRequestData("creatortype", EnumUtility.ToApiString(troubleshooterCommentRequest.CreatorType));
+            parameters.AppendRequestDataNonNegativeInt("creatorid", troubleshooterCommentRequest.CreatorId);
+            parameters.AppendRequestDataNonEmptyString("fullname", troubleshooterCommentRequest.FullName);
+            parameters.AppendRequestDataNonEmptyString("email", troubleshooterCommentRequest.Email);
+            parameters.AppendRequestDataNonNegativeInt("parentcommentid", troubleshooterCommentRequest.ParentCommentId);
 
-			return parameters;
-		}
+            return parameters;
+        }
 
-		#endregion
+        #endregion
 
-		#region Troubleshooter Attachment Methods
+        #region Troubleshooter Attachment Methods
 
-		public TroubleshooterAttachmentCollection GetTroubleshooterAttachments(int troubleshooterStepId)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}", TroubleshooterAttachmentBaseUrl, troubleshooterStepId);
+        public TroubleshooterAttachmentCollection GetTroubleshooterAttachments(int troubleshooterStepId)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}", TroubleshooterAttachmentBaseUrl, troubleshooterStepId);
 
-			return Connector.ExecuteGet<TroubleshooterAttachmentCollection>(apiMethod);
-		}
+            return this.Connector.ExecuteGet<TroubleshooterAttachmentCollection>(apiMethod);
+        }
 
-		public TroubleshooterAttachment GetTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId)
-		{
-			string apiMethod = String.Format("{0}/{1}/{2}", TroubleshooterAttachmentBaseUrl, troubleshooterStepId, troubleshooterAttachmentId);
+        public TroubleshooterAttachment GetTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId)
+        {
+            var apiMethod = string.Format("{0}/{1}/{2}", TroubleshooterAttachmentBaseUrl, troubleshooterStepId, troubleshooterAttachmentId);
 
-			TroubleshooterAttachmentCollection troubleshooterAttachments = Connector.ExecuteGet<TroubleshooterAttachmentCollection>(apiMethod);
+            var troubleshooterAttachments = this.Connector.ExecuteGet<TroubleshooterAttachmentCollection>(apiMethod);
 
-			if (troubleshooterAttachments != null && troubleshooterAttachments.Count > 0)
-			{
-				return troubleshooterAttachments[0];
-			}
+            if (troubleshooterAttachments != null && troubleshooterAttachments.Count > 0)
+            {
+                return troubleshooterAttachments[0];
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public TroubleshooterAttachment CreateTroubleshooterAttachment(TroubleshooterAttachmentRequest troubleshooterAttachmentRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(troubleshooterAttachmentRequest, RequestTypes.Create);
+        public TroubleshooterAttachment CreateTroubleshooterAttachment(TroubleshooterAttachmentRequest troubleshooterAttachmentRequest)
+        {
+            var parameters = PopulateRequestParameters(troubleshooterAttachmentRequest, RequestTypes.Create);
 
-			TroubleshooterAttachmentCollection troubleshooterAttachments = Connector.ExecutePost<TroubleshooterAttachmentCollection>(TroubleshooterAttachmentBaseUrl, parameters.ToString());
+            var troubleshooterAttachments = this.Connector.ExecutePost<TroubleshooterAttachmentCollection>(TroubleshooterAttachmentBaseUrl, parameters.ToString());
 
-			if (troubleshooterAttachments != null && troubleshooterAttachments.Count > 0)
-			{
-				return troubleshooterAttachments[0];
-			}
+            if (troubleshooterAttachments != null && troubleshooterAttachments.Count > 0)
+            {
+                return troubleshooterAttachments[0];
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public bool DeleteTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId)
-		{
-			string apiMethod = String.Format("{0}/{1}/{2}", TroubleshooterAttachmentBaseUrl, troubleshooterStepId, troubleshooterAttachmentId);
+        public bool DeleteTroubleshooterAttachment(int troubleshooterStepId, int troubleshooterAttachmentId)
+        {
+            var apiMethod = string.Format("{0}/{1}/{2}", TroubleshooterAttachmentBaseUrl, troubleshooterStepId, troubleshooterAttachmentId);
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-		private RequestBodyBuilder PopulateRequestParameters(TroubleshooterAttachmentRequest troubleshooterAttachmentRequest, RequestTypes requestType)
-		{
-			troubleshooterAttachmentRequest.EnsureValidData(requestType);
+        private static RequestBodyBuilder PopulateRequestParameters(TroubleshooterAttachmentRequest troubleshooterAttachmentRequest, RequestTypes requestType)
+        {
+            troubleshooterAttachmentRequest.EnsureValidData(requestType);
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonNegativeInt("troubleshooterstepid", troubleshooterAttachmentRequest.TroubleshooterStepId);
-			parameters.AppendRequestDataNonEmptyString("filename", troubleshooterAttachmentRequest.FileName);
-			parameters.AppendRequestDataNonEmptyString("contents", troubleshooterAttachmentRequest.Contents);
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonNegativeInt("troubleshooterstepid", troubleshooterAttachmentRequest.TroubleshooterStepId);
+            parameters.AppendRequestDataNonEmptyString("filename", troubleshooterAttachmentRequest.FileName);
+            parameters.AppendRequestDataNonEmptyString("contents", troubleshooterAttachmentRequest.Contents);
 
-			return parameters;
-		}
+            return parameters;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

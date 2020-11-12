@@ -1,67 +1,50 @@
 ﻿using System;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using KayakoRestApi.Utilities;
 
 namespace KayakoRestApi.Data
 {
-	public class UnixDateTime : IXmlSerializable
-	{
-		private long _unixDateTime = 0;
+    public class UnixDateTime : IXmlSerializable
+    {
+        private long unixDateTime;
 
-		public UnixDateTime()
-		{
-		}
+        public UnixDateTime() { }
 
-		public UnixDateTime(DateTime dateTime)
-		{
-			_unixDateTime = UnixTimeUtility.ToUnixTime(dateTime);
-		}
+        public UnixDateTime(DateTime dateTime) => this.unixDateTime = UnixTimeUtility.ToUnixTime(dateTime);
 
-		public UnixDateTime(long epochDateTime)
-		{
-			_unixDateTime = epochDateTime;
-		}
+        public UnixDateTime(long epochDateTime) => this.unixDateTime = epochDateTime;
 
-		[XmlIgnore]
-		public long UnixTimeStamp
-		{
-			get { return _unixDateTime; }
-			set { _unixDateTime = value; }
-		}
+        [XmlIgnore]
+        public long UnixTimeStamp
+        {
+            get => this.unixDateTime;
+            set => this.unixDateTime = value;
+        }
 
-		[XmlIgnore]
-		public DateTime DateTime
-		{
-			get { return _unixDateTime != 0 ? UnixTimeUtility.FromUnixTime(_unixDateTime) : DateTime.MinValue; }
-		}
+        [XmlIgnore]
+        public DateTime DateTime => this.unixDateTime != 0 ? UnixTimeUtility.FromUnixTime(this.unixDateTime) : DateTime.MinValue;
 
-		public System.Xml.Schema.XmlSchema GetSchema()
-		{
-			return null;
-		}
+        public XmlSchema GetSchema() => null;
 
-		public void ReadXml(XmlReader reader)
-		{
-			reader.MoveToContent();
+        public void ReadXml(XmlReader reader)
+        {
+            reader.MoveToContent();
 
-			if (!reader.IsEmptyElement)
-			{
-				string value = reader.ReadElementContentAsString();
+            if (!reader.IsEmptyElement)
+            {
+                var value = reader.ReadElementContentAsString();
 
-				if (long.TryParse(value, out _unixDateTime))
-				{
-					return;
-				}
-			}
+                if (long.TryParse(value, out this.unixDateTime))
+                {
+                    return;
+                }
+            }
 
-			_unixDateTime = 0;
-		}
+            this.unixDateTime = 0;
+        }
 
-		public void WriteXml(XmlWriter writer)
-		{
-			writer.WriteString(_unixDateTime.ToString());
-		}
-	}
+        public void WriteXml(XmlWriter writer) => writer.WriteString(this.unixDateTime.ToString());
+    }
 }
-

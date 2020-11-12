@@ -1,416 +1,403 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using KayakoRestApi.Core.Knowledgebase;
-using KayakoRestApi.Data;
 using KayakoRestApi.Net;
 using KayakoRestApi.RequestBase;
 using KayakoRestApi.Text;
+using KayakoRestApi.Utilities;
 
 namespace KayakoRestApi.Controllers
 {
-	public interface IKnowledgebaseController
-	{
-		KnowledgebaseCategoryCollection GetKnowledgebaseCategories();
+    public interface IKnowledgebaseController
+    {
+        KnowledgebaseCategoryCollection GetKnowledgebaseCategories();
 
-		KnowledgebaseCategoryCollection GetKnowledgebaseCategories(int count, int start);
+        KnowledgebaseCategoryCollection GetKnowledgebaseCategories(int count, int start);
 
-		KnowledgebaseCategory GetKnowledgebaseCategory(int knowledgebaseCategoryId);
+        KnowledgebaseCategory GetKnowledgebaseCategory(int knowledgebaseCategoryId);
 
-		KnowledgebaseCategory CreateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest);
+        KnowledgebaseCategory CreateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest);
 
-		KnowledgebaseCategory UpdateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest);
+        KnowledgebaseCategory UpdateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest);
 
-		bool DeleteKnowledgebaseCategory(int knowledgebaseCategoryId);
+        bool DeleteKnowledgebaseCategory(int knowledgebaseCategoryId);
 
-		KnowledgebaseArticleCollection GetKnowledgebaseArticles();
+        KnowledgebaseArticleCollection GetKnowledgebaseArticles();
 
-		KnowledgebaseArticleCollection GetKnowledgebaseArticles(int count, int start);
+        KnowledgebaseArticleCollection GetKnowledgebaseArticles(int count, int start);
 
-		KnowledgebaseArticle GetKnowledgebaseArticle(int knowledgebaseArticleId);
+        KnowledgebaseArticle GetKnowledgebaseArticle(int knowledgebaseArticleId);
 
-		KnowledgebaseArticle CreateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest);
+        KnowledgebaseArticle CreateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest);
 
-		KnowledgebaseArticle UpdateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest);
+        KnowledgebaseArticle UpdateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest);
 
-		bool DeleteKnowledgebaseArticle(int knowledgebaseArticleId);
+        bool DeleteKnowledgebaseArticle(int knowledgebaseArticleId);
 
-		KnowledgebaseCommentCollection GetKnowledgebaseComments(int knowledgebaseArticleId);
+        KnowledgebaseCommentCollection GetKnowledgebaseComments(int knowledgebaseArticleId);
 
-		KnowledgebaseComment GetKnowledgebaseComment(int knowledgebaseCommentId);
+        KnowledgebaseComment GetKnowledgebaseComment(int knowledgebaseCommentId);
 
-		KnowledgebaseComment CreateKnowledgebaseComment(KnowledgebaseCommentRequest knowledgebaseCommentRequest);
+        KnowledgebaseComment CreateKnowledgebaseComment(KnowledgebaseCommentRequest knowledgebaseCommentRequest);
 
-		bool DeleteKnowledgebaseComment(int knowledgebaseCommentId);
+        bool DeleteKnowledgebaseComment(int knowledgebaseCommentId);
 
-		KnowledgebaseAttachmentCollection GetKnowledgebaseAttachments(int knowledgebaseArticleId);
+        KnowledgebaseAttachmentCollection GetKnowledgebaseAttachments(int knowledgebaseArticleId);
 
-		KnowledgebaseAttachment GetKnowledgebaseAttachment(int knowledgebaseArticleId, int attachmentId);
+        KnowledgebaseAttachment GetKnowledgebaseAttachment(int knowledgebaseArticleId, int attachmentId);
 
-		KnowledgebaseAttachment CreateKnowledgebaseAttachment(KnowledgebaseAttachmentRequest knowledgebaseAttachmentRequest);
+        KnowledgebaseAttachment CreateKnowledgebaseAttachment(KnowledgebaseAttachmentRequest knowledgebaseAttachmentRequest);
 
-		bool DeleteKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId);
-	}
+        bool DeleteKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId);
+    }
 
-	public sealed class KnowledgebaseController : BaseController, IKnowledgebaseController
-	{
+    public sealed class KnowledgebaseController : BaseController, IKnowledgebaseController
+    {
+        private const string KnowledgebaseCategoryBaseUrl = "/Knowledgebase/Category";
+        private const string KnowledgebaseArticleBaseUrl = "/Knowledgebase/Article";
+        private const string KnowledgebaseCommentBaseUrl = "/Knowledgebase/Comment";
+        private const string KnowledgebaseAttachmentBaseUrl = "/Knowledgebase/Attachment";
+
         public KnowledgebaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
-            : base(apiKey, secretKey, apiUrl, proxy)
-        {
-        }
+            : base(apiKey, secretKey, apiUrl, proxy) { }
 
         public KnowledgebaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
-			: base(apiKey, secretKey, apiUrl, proxy, requestType)
-		{
-		}
+            : base(apiKey, secretKey, apiUrl, proxy, requestType) { }
 
-        public KnowledgebaseController(IKayakoApiRequest kayakoApiRequest) 
-			: base(kayakoApiRequest)
-		{
-		}
+        public KnowledgebaseController(IKayakoApiRequest kayakoApiRequest)
+            : base(kayakoApiRequest) { }
 
-		private const string KnowledgebaseCategoryBaseUrl = "/Knowledgebase/Category";
-		private const string KnowledgebaseArticleBaseUrl = "/Knowledgebase/Article";
-		private const string KnowledgebaseCommentBaseUrl = "/Knowledgebase/Comment";
-		private const string KnowledgebaseAttachmentBaseUrl = "/Knowledgebase/Attachment";
-
-		#region Knowledgebase Category Methods
-
-		public KnowledgebaseCategoryCollection GetKnowledgebaseCategories()
-		{
-			return GetKnowledgebaseCategories(-1, -1);
-		}
-
-		public KnowledgebaseCategoryCollection GetKnowledgebaseCategories(int count, int start)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}/{2}", KnowledgebaseCategoryBaseUrl, count, start);
-
-			return Connector.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod);
-		}
+        #region Knowledgebase Category Methods
 
-		public KnowledgebaseCategory GetKnowledgebaseCategory(int knowledgebaseCategoryId)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseCategoryBaseUrl, knowledgebaseCategoryId);
-
-			KnowledgebaseCategoryCollection knowledgebaseCategories = Connector.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod);
-
-			if (knowledgebaseCategories != null && knowledgebaseCategories.Count > 0)
-			{
-				return knowledgebaseCategories[0];
-			}
-
-			return null;
-		}
-
-		public KnowledgebaseCategory CreateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(knowledgebaseCategoryRequest, RequestTypes.Create);
+        public KnowledgebaseCategoryCollection GetKnowledgebaseCategories() => this.GetKnowledgebaseCategories(-1, -1);
 
-			KnowledgebaseCategoryCollection knowledgebaseCategories = Connector.ExecutePost<KnowledgebaseCategoryCollection>(KnowledgebaseCategoryBaseUrl, parameters.ToString());
+        public KnowledgebaseCategoryCollection GetKnowledgebaseCategories(int count, int start)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}/{2}", KnowledgebaseCategoryBaseUrl, count, start);
 
-			if (knowledgebaseCategories != null && knowledgebaseCategories.Count > 0)
-			{
-				return knowledgebaseCategories[0];
-			}
+            return this.Connector.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod);
+        }
 
-			return null;
-		}
+        public KnowledgebaseCategory GetKnowledgebaseCategory(int knowledgebaseCategoryId)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseCategoryBaseUrl, knowledgebaseCategoryId);
 
-		public KnowledgebaseCategory UpdateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseCategoryBaseUrl, knowledgebaseCategoryRequest.Id);
-			RequestBodyBuilder parameters = PopulateRequestParameters(knowledgebaseCategoryRequest, RequestTypes.Update);
+            var knowledgebaseCategories = this.Connector.ExecuteGet<KnowledgebaseCategoryCollection>(apiMethod);
 
-			KnowledgebaseCategoryCollection knowledgebaseCategories = Connector.ExecutePut<KnowledgebaseCategoryCollection>(apiMethod, parameters.ToString());
+            if (knowledgebaseCategories != null && knowledgebaseCategories.Count > 0)
+            {
+                return knowledgebaseCategories[0];
+            }
 
-			if (knowledgebaseCategories != null && knowledgebaseCategories.Count > 0)
-			{
-				return knowledgebaseCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public KnowledgebaseCategory CreateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest)
+        {
+            var parameters = this.PopulateRequestParameters(knowledgebaseCategoryRequest, RequestTypes.Create);
 
-		public bool DeleteKnowledgebaseCategory(int knowledgebaseCategoryId)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseCategoryBaseUrl, knowledgebaseCategoryId);
+            var knowledgebaseCategories = this.Connector.ExecutePost<KnowledgebaseCategoryCollection>(KnowledgebaseCategoryBaseUrl, parameters.ToString());
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            if (knowledgebaseCategories != null && knowledgebaseCategories.Count > 0)
+            {
+                return knowledgebaseCategories[0];
+            }
 
-		private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest, RequestTypes requestType)
-		{
-			knowledgebaseCategoryRequest.EnsureValidData(requestType);
+            return null;
+        }
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonEmptyString("title", knowledgebaseCategoryRequest.Title);
+        public KnowledgebaseCategory UpdateKnowledgebaseCategory(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseCategoryBaseUrl, knowledgebaseCategoryRequest.Id);
+            var parameters = this.PopulateRequestParameters(knowledgebaseCategoryRequest, RequestTypes.Update);
 
-			if (knowledgebaseCategoryRequest.CategoryType.HasValue)
-			{
-				parameters.AppendRequestData("categorytype",
-				                             EnumUtility.ToApiString(knowledgebaseCategoryRequest.CategoryType.Value));
-			}
+            var knowledgebaseCategories = this.Connector.ExecutePut<KnowledgebaseCategoryCollection>(apiMethod, parameters.ToString());
 
-			if (knowledgebaseCategoryRequest.ParentCategoryId.HasValue)
-			{
-				parameters.AppendRequestData("parentcategoryid", knowledgebaseCategoryRequest.ParentCategoryId.Value);
-			}
+            if (knowledgebaseCategories != null && knowledgebaseCategories.Count > 0)
+            {
+                return knowledgebaseCategories[0];
+            }
 
-			if (knowledgebaseCategoryRequest.DisplayOrder.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("displayorder", knowledgebaseCategoryRequest.DisplayOrder.Value);
-			}
+            return null;
+        }
 
-			if (knowledgebaseCategoryRequest.ArticleSortOrder.HasValue)
-			{
-				parameters.AppendRequestData("articlesortorder",
-				                             EnumUtility.ToApiString(knowledgebaseCategoryRequest.ArticleSortOrder.Value));
-			}
+        public bool DeleteKnowledgebaseCategory(int knowledgebaseCategoryId)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseCategoryBaseUrl, knowledgebaseCategoryId);
 
-			parameters.AppendRequestDataBool("allowcomments", knowledgebaseCategoryRequest.AllowComments);
-			parameters.AppendRequestDataBool("allowrating", knowledgebaseCategoryRequest.AllowRating);
-			parameters.AppendRequestDataBool("ispublished", knowledgebaseCategoryRequest.IsPublished);
-			parameters.AppendRequestDataBool("uservisibilitycustom", knowledgebaseCategoryRequest.UserVisibilityCustom);
-			parameters.AppendRequestDataArrayCommaSeparated("usergroupidlist", knowledgebaseCategoryRequest.UserGroupIdList);
-			parameters.AppendRequestDataBool("staffvisibilitycustom", knowledgebaseCategoryRequest.StaffVisibilityCustom);
-			parameters.AppendRequestDataArrayCommaSeparated("staffgroupidlist", knowledgebaseCategoryRequest.StaffGroupIdList);
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-			if (requestType == RequestTypes.Create && knowledgebaseCategoryRequest.StaffId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("staffid", knowledgebaseCategoryRequest.StaffId.Value);
-			}
+        private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseCategoryRequest knowledgebaseCategoryRequest, RequestTypes requestType)
+        {
+            knowledgebaseCategoryRequest.EnsureValidData(requestType);
 
-			return parameters;
-		}
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonEmptyString("title", knowledgebaseCategoryRequest.Title);
 
-		#endregion
+            if (knowledgebaseCategoryRequest.CategoryType.HasValue)
+            {
+                parameters.AppendRequestData("categorytype",
+                    EnumUtility.ToApiString(knowledgebaseCategoryRequest.CategoryType.Value));
+            }
 
-		#region Knowledgebase Article Methods
+            if (knowledgebaseCategoryRequest.ParentCategoryId.HasValue)
+            {
+                parameters.AppendRequestData("parentcategoryid", knowledgebaseCategoryRequest.ParentCategoryId.Value);
+            }
 
-		public KnowledgebaseArticleCollection GetKnowledgebaseArticles()
-		{
-			return Connector.ExecuteGet<KnowledgebaseArticleCollection>(KnowledgebaseArticleBaseUrl);
-		}
+            if (knowledgebaseCategoryRequest.DisplayOrder.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("displayorder", knowledgebaseCategoryRequest.DisplayOrder.Value);
+            }
 
-		public KnowledgebaseArticleCollection GetKnowledgebaseArticles(int count, int start)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}/{2}", KnowledgebaseArticleBaseUrl, count, start);
+            if (knowledgebaseCategoryRequest.ArticleSortOrder.HasValue)
+            {
+                parameters.AppendRequestData("articlesortorder",
+                    EnumUtility.ToApiString(knowledgebaseCategoryRequest.ArticleSortOrder.Value));
+            }
 
-			return Connector.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod);
-		}
+            parameters.AppendRequestDataBool("allowcomments", knowledgebaseCategoryRequest.AllowComments);
+            parameters.AppendRequestDataBool("allowrating", knowledgebaseCategoryRequest.AllowRating);
+            parameters.AppendRequestDataBool("ispublished", knowledgebaseCategoryRequest.IsPublished);
+            parameters.AppendRequestDataBool("uservisibilitycustom", knowledgebaseCategoryRequest.UserVisibilityCustom);
+            parameters.AppendRequestDataArrayCommaSeparated("usergroupidlist", knowledgebaseCategoryRequest.UserGroupIdList);
+            parameters.AppendRequestDataBool("staffvisibilitycustom", knowledgebaseCategoryRequest.StaffVisibilityCustom);
+            parameters.AppendRequestDataArrayCommaSeparated("staffgroupidlist", knowledgebaseCategoryRequest.StaffGroupIdList);
 
-		public KnowledgebaseArticle GetKnowledgebaseArticle(int knowledgebaseArticleId)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseArticleBaseUrl, knowledgebaseArticleId);
+            if (requestType == RequestTypes.Create && knowledgebaseCategoryRequest.StaffId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("staffid", knowledgebaseCategoryRequest.StaffId.Value);
+            }
 
-			KnowledgebaseArticleCollection knowledgebaseArticles = Connector.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod);
+            return parameters;
+        }
 
-			if (knowledgebaseArticles != null && knowledgebaseArticles.Count > 0)
-			{
-				return knowledgebaseArticles[0];
-			}
+        #endregion
 
-			return null;
-		}
+        #region Knowledgebase Article Methods
 
-		public KnowledgebaseArticle CreateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(knowledgebaseArticleRequest, RequestTypes.Create);
+        public KnowledgebaseArticleCollection GetKnowledgebaseArticles() => this.Connector.ExecuteGet<KnowledgebaseArticleCollection>(KnowledgebaseArticleBaseUrl);
 
-			KnowledgebaseArticleCollection knowledgebaseArticles = Connector.ExecutePost<KnowledgebaseArticleCollection>(KnowledgebaseArticleBaseUrl, parameters.ToString());
+        public KnowledgebaseArticleCollection GetKnowledgebaseArticles(int count, int start)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}/{2}", KnowledgebaseArticleBaseUrl, count, start);
 
-			if (knowledgebaseArticles != null && knowledgebaseArticles.Count > 0)
-			{
-				return knowledgebaseArticles[0];
-			}
+            return this.Connector.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod);
+        }
 
-			return null;
-		}
+        public KnowledgebaseArticle GetKnowledgebaseArticle(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseArticleBaseUrl, knowledgebaseArticleId);
 
-		public KnowledgebaseArticle UpdateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseArticleBaseUrl, knowledgebaseArticleRequest.Id);
-			RequestBodyBuilder parameters = PopulateRequestParameters(knowledgebaseArticleRequest, RequestTypes.Update);
+            var knowledgebaseArticles = this.Connector.ExecuteGet<KnowledgebaseArticleCollection>(apiMethod);
 
-			KnowledgebaseArticleCollection knowledgebaseArticles = Connector.ExecutePut<KnowledgebaseArticleCollection>(apiMethod, parameters.ToString());
+            if (knowledgebaseArticles != null && knowledgebaseArticles.Count > 0)
+            {
+                return knowledgebaseArticles[0];
+            }
 
-			if (knowledgebaseArticles != null && knowledgebaseArticles.Count > 0)
-			{
-				return knowledgebaseArticles[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public KnowledgebaseArticle CreateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest)
+        {
+            var parameters = this.PopulateRequestParameters(knowledgebaseArticleRequest, RequestTypes.Create);
 
-		public bool DeleteKnowledgebaseArticle(int knowledgebaseArticleId)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseArticleBaseUrl, knowledgebaseArticleId);
+            var knowledgebaseArticles = this.Connector.ExecutePost<KnowledgebaseArticleCollection>(KnowledgebaseArticleBaseUrl, parameters.ToString());
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            if (knowledgebaseArticles != null && knowledgebaseArticles.Count > 0)
+            {
+                return knowledgebaseArticles[0];
+            }
 
-		private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseArticleRequest knowledgebaseArticleRequest, RequestTypes requestType)
-		{
-			knowledgebaseArticleRequest.EnsureValidData(requestType);
+            return null;
+        }
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonEmptyString("subject", knowledgebaseArticleRequest.Subject);
-			parameters.AppendRequestDataNonEmptyString("contents", knowledgebaseArticleRequest.Contents);
+        public KnowledgebaseArticle UpdateKnowledgebaseArticle(KnowledgebaseArticleRequest knowledgebaseArticleRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseArticleBaseUrl, knowledgebaseArticleRequest.Id);
+            var parameters = this.PopulateRequestParameters(knowledgebaseArticleRequest, RequestTypes.Update);
 
-			if (requestType == RequestTypes.Create && knowledgebaseArticleRequest.CreatorId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("creatorid", knowledgebaseArticleRequest.CreatorId.Value);
-			}
+            var knowledgebaseArticles = this.Connector.ExecutePut<KnowledgebaseArticleCollection>(apiMethod, parameters.ToString());
 
-			if (knowledgebaseArticleRequest.ArticleStatus.HasValue)
-			{
-				parameters.AppendRequestData("articlestatus", EnumUtility.ToApiString(knowledgebaseArticleRequest.ArticleStatus.Value));
-			}
+            if (knowledgebaseArticles != null && knowledgebaseArticles.Count > 0)
+            {
+                return knowledgebaseArticles[0];
+            }
 
-			parameters.AppendRequestDataBool("isfeatured", knowledgebaseArticleRequest.IsFeatured);
-			parameters.AppendRequestDataBool("allowcomments", knowledgebaseArticleRequest.AllowComments);
-			parameters.AppendRequestDataArrayCommaSeparated("categoryid", knowledgebaseArticleRequest.CategoryIds);
+            return null;
+        }
 
-			if (requestType == RequestTypes.Update && knowledgebaseArticleRequest.EditedStaffId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("editedstaffid", knowledgebaseArticleRequest.EditedStaffId.Value);
-			}
+        public bool DeleteKnowledgebaseArticle(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseArticleBaseUrl, knowledgebaseArticleId);
 
-			return parameters;
-		}
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-		#endregion
+        private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseArticleRequest knowledgebaseArticleRequest, RequestTypes requestType)
+        {
+            knowledgebaseArticleRequest.EnsureValidData(requestType);
 
-		#region Knowledgebase Comments Methods
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonEmptyString("subject", knowledgebaseArticleRequest.Subject);
+            parameters.AppendRequestDataNonEmptyString("contents", knowledgebaseArticleRequest.Contents);
 
-		public KnowledgebaseCommentCollection GetKnowledgebaseComments(int knowledgebaseArticleId)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}", KnowledgebaseCommentBaseUrl, knowledgebaseArticleId);
+            if (requestType == RequestTypes.Create && knowledgebaseArticleRequest.CreatorId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("creatorid", knowledgebaseArticleRequest.CreatorId.Value);
+            }
 
-			return Connector.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod);
-		}
+            if (knowledgebaseArticleRequest.ArticleStatus.HasValue)
+            {
+                parameters.AppendRequestData("articlestatus", EnumUtility.ToApiString(knowledgebaseArticleRequest.ArticleStatus.Value));
+            }
 
-		public KnowledgebaseComment GetKnowledgebaseComment(int knowledgebaseCommentId)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseCommentBaseUrl, knowledgebaseCommentId);
+            parameters.AppendRequestDataBool("isfeatured", knowledgebaseArticleRequest.IsFeatured);
+            parameters.AppendRequestDataBool("allowcomments", knowledgebaseArticleRequest.AllowComments);
+            parameters.AppendRequestDataArrayCommaSeparated("categoryid", knowledgebaseArticleRequest.CategoryIds);
 
-			KnowledgebaseCommentCollection knowledgebaseComments = Connector.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod);
+            if (requestType == RequestTypes.Update && knowledgebaseArticleRequest.EditedStaffId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("editedstaffid", knowledgebaseArticleRequest.EditedStaffId.Value);
+            }
 
-			if (knowledgebaseComments != null && knowledgebaseComments.Count > 0)
-			{
-				return knowledgebaseComments[0];
-			}
+            return parameters;
+        }
 
-			return null;
-		}
+        #endregion
 
-		public KnowledgebaseComment CreateKnowledgebaseComment(KnowledgebaseCommentRequest knowledgebaseCommentRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(knowledgebaseCommentRequest, RequestTypes.Create);
+        #region Knowledgebase Comments Methods
 
-			KnowledgebaseCommentCollection knowledgebaseComments = Connector.ExecutePost<KnowledgebaseCommentCollection>(KnowledgebaseCommentBaseUrl, parameters.ToString());
+        public KnowledgebaseCommentCollection GetKnowledgebaseComments(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}", KnowledgebaseCommentBaseUrl, knowledgebaseArticleId);
 
-			if (knowledgebaseComments != null && knowledgebaseComments.Count > 0)
-			{
-				return knowledgebaseComments[0];
-			}
+            return this.Connector.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod);
+        }
 
-			return null;
-		}
+        public KnowledgebaseComment GetKnowledgebaseComment(int knowledgebaseCommentId)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseCommentBaseUrl, knowledgebaseCommentId);
 
-		public bool DeleteKnowledgebaseComment(int knowledgebaseCommentId)
-		{
-			string apiMethod = String.Format("{0}/{1}", KnowledgebaseCommentBaseUrl, knowledgebaseCommentId);
+            var knowledgebaseComments = this.Connector.ExecuteGet<KnowledgebaseCommentCollection>(apiMethod);
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            if (knowledgebaseComments != null && knowledgebaseComments.Count > 0)
+            {
+                return knowledgebaseComments[0];
+            }
 
-		private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseCommentRequest knowledgebaseCommentRequest, RequestTypes requestType)
-		{
-			knowledgebaseCommentRequest.EnsureValidData(requestType);
+            return null;
+        }
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonNegativeInt("knowledgebasearticleid", knowledgebaseCommentRequest.KnowledgebaseArticleId);
-			parameters.AppendRequestDataNonEmptyString("contents", knowledgebaseCommentRequest.Contents);
-			parameters.AppendRequestData("creatortype", EnumUtility.ToApiString(knowledgebaseCommentRequest.CreatorType));
-			
-			if (knowledgebaseCommentRequest.CreatorId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("creatorid", knowledgebaseCommentRequest.CreatorId.Value);
-			}
-			else
-			{
-				parameters.AppendRequestDataNonEmptyString("fullname", knowledgebaseCommentRequest.FullName);
-			}
+        public KnowledgebaseComment CreateKnowledgebaseComment(KnowledgebaseCommentRequest knowledgebaseCommentRequest)
+        {
+            var parameters = this.PopulateRequestParameters(knowledgebaseCommentRequest, RequestTypes.Create);
 
-			parameters.AppendRequestDataNonEmptyString("email", knowledgebaseCommentRequest.Email);
+            var knowledgebaseComments = this.Connector.ExecutePost<KnowledgebaseCommentCollection>(KnowledgebaseCommentBaseUrl, parameters.ToString());
 
-			if (knowledgebaseCommentRequest.ParentCommentId.HasValue)
-			{
-				parameters.AppendRequestDataNonNegativeInt("parentcommentid", knowledgebaseCommentRequest.ParentCommentId.Value);
-			}
+            if (knowledgebaseComments != null && knowledgebaseComments.Count > 0)
+            {
+                return knowledgebaseComments[0];
+            }
 
-			return parameters;
-		}
+            return null;
+        }
 
-		#endregion
+        public bool DeleteKnowledgebaseComment(int knowledgebaseCommentId)
+        {
+            var apiMethod = string.Format("{0}/{1}", KnowledgebaseCommentBaseUrl, knowledgebaseCommentId);
 
-		#region Knowledgebase Attachment Methods
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-		public KnowledgebaseAttachmentCollection GetKnowledgebaseAttachments(int knowledgebaseArticleId)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}", KnowledgebaseAttachmentBaseUrl, knowledgebaseArticleId);
+        private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseCommentRequest knowledgebaseCommentRequest, RequestTypes requestType)
+        {
+            knowledgebaseCommentRequest.EnsureValidData(requestType);
 
-			return Connector.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod);
-		}
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonNegativeInt("knowledgebasearticleid", knowledgebaseCommentRequest.KnowledgebaseArticleId);
+            parameters.AppendRequestDataNonEmptyString("contents", knowledgebaseCommentRequest.Contents);
+            parameters.AppendRequestData("creatortype", EnumUtility.ToApiString(knowledgebaseCommentRequest.CreatorType));
 
-		public KnowledgebaseAttachment GetKnowledgebaseAttachment(int knowledgebaseArticleId, int attachmentId)
-		{
-			string apiMethod = string.Format("{0}/{1}/{2}", KnowledgebaseAttachmentBaseUrl, knowledgebaseArticleId, attachmentId);
+            if (knowledgebaseCommentRequest.CreatorId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("creatorid", knowledgebaseCommentRequest.CreatorId.Value);
+            }
+            else
+            {
+                parameters.AppendRequestDataNonEmptyString("fullname", knowledgebaseCommentRequest.FullName);
+            }
 
-			KnowledgebaseAttachmentCollection knowledgebaseAttachments = Connector.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod);
+            parameters.AppendRequestDataNonEmptyString("email", knowledgebaseCommentRequest.Email);
 
-			if (knowledgebaseAttachments != null && knowledgebaseAttachments.Count > 0)
-			{
-				return knowledgebaseAttachments[0];
-			}
+            if (knowledgebaseCommentRequest.ParentCommentId.HasValue)
+            {
+                parameters.AppendRequestDataNonNegativeInt("parentcommentid", knowledgebaseCommentRequest.ParentCommentId.Value);
+            }
 
-			return null;
-		}
+            return parameters;
+        }
 
-		public KnowledgebaseAttachment CreateKnowledgebaseAttachment(KnowledgebaseAttachmentRequest knowledgebaseAttachmentRequest)
-		{
-			const string apiMethod = KnowledgebaseAttachmentBaseUrl;
-			RequestBodyBuilder parameters = PopulateRequestParameters(knowledgebaseAttachmentRequest, RequestTypes.Create);
+        #endregion
 
-			KnowledgebaseAttachmentCollection knowledgebaseAttachments = Connector.ExecutePost<KnowledgebaseAttachmentCollection>(apiMethod, parameters.ToString());
+        #region Knowledgebase Attachment Methods
 
-			if (knowledgebaseAttachments != null && knowledgebaseAttachments.Count > 0)
-			{
-				return knowledgebaseAttachments[0];
-			}
+        public KnowledgebaseAttachmentCollection GetKnowledgebaseAttachments(int knowledgebaseArticleId)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}", KnowledgebaseAttachmentBaseUrl, knowledgebaseArticleId);
 
-			return null;
-		}
+            return this.Connector.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod);
+        }
 
-		public bool DeleteKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId)
-		{
-			string apiMethod = string.Format("{0}/{1}/{2}", KnowledgebaseAttachmentBaseUrl, knowledgebaseArticleId, knowledgebaseAttachmentId);
+        public KnowledgebaseAttachment GetKnowledgebaseAttachment(int knowledgebaseArticleId, int attachmentId)
+        {
+            var apiMethod = string.Format("{0}/{1}/{2}", KnowledgebaseAttachmentBaseUrl, knowledgebaseArticleId, attachmentId);
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            var knowledgebaseAttachments = this.Connector.ExecuteGet<KnowledgebaseAttachmentCollection>(apiMethod);
 
-		private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseAttachmentRequest knowledgebaseAttachmentRequest, RequestTypes requestType)
-		{
-			knowledgebaseAttachmentRequest.EnsureValidData(requestType);
+            if (knowledgebaseAttachments != null && knowledgebaseAttachments.Count > 0)
+            {
+                return knowledgebaseAttachments[0];
+            }
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonNegativeInt("kbarticleid", knowledgebaseAttachmentRequest.KnowledgebaseArticleId);
-			parameters.AppendRequestDataNonEmptyString("filename", knowledgebaseAttachmentRequest.FileName);
-			parameters.AppendRequestDataNonEmptyString("contents", knowledgebaseAttachmentRequest.Contents);
+            return null;
+        }
 
-			return parameters;
-		}
+        public KnowledgebaseAttachment CreateKnowledgebaseAttachment(KnowledgebaseAttachmentRequest knowledgebaseAttachmentRequest)
+        {
+            const string apiMethod = KnowledgebaseAttachmentBaseUrl;
+            var parameters = this.PopulateRequestParameters(knowledgebaseAttachmentRequest, RequestTypes.Create);
 
-		#endregion
-	}
+            var knowledgebaseAttachments = this.Connector.ExecutePost<KnowledgebaseAttachmentCollection>(apiMethod, parameters.ToString());
+
+            if (knowledgebaseAttachments != null && knowledgebaseAttachments.Count > 0)
+            {
+                return knowledgebaseAttachments[0];
+            }
+
+            return null;
+        }
+
+        public bool DeleteKnowledgebaseAttachment(int knowledgebaseArticleId, int knowledgebaseAttachmentId)
+        {
+            var apiMethod = string.Format("{0}/{1}/{2}", KnowledgebaseAttachmentBaseUrl, knowledgebaseArticleId, knowledgebaseAttachmentId);
+
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
+
+        private RequestBodyBuilder PopulateRequestParameters(KnowledgebaseAttachmentRequest knowledgebaseAttachmentRequest, RequestTypes requestType)
+        {
+            knowledgebaseAttachmentRequest.EnsureValidData(requestType);
+
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonNegativeInt("kbarticleid", knowledgebaseAttachmentRequest.KnowledgebaseArticleId);
+            parameters.AppendRequestDataNonEmptyString("filename", knowledgebaseAttachmentRequest.FileName);
+            parameters.AppendRequestDataNonEmptyString("contents", knowledgebaseAttachmentRequest.Contents);
+
+            return parameters;
+        }
+
+        #endregion
+    }
 }

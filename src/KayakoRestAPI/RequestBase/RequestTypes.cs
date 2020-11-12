@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KayakoRestApi.RequestBase
 {
     /// <summary>
-    /// Enum representing the different Api request types
+    ///     Enum representing the different Api request types
     /// </summary>
-	[Flags]
-	public enum RequestTypes
-	{
+    [Flags]
+    public enum RequestTypes
+    {
         /// <summary>
-        /// Create (POST) Api method requests
+        ///     Create (POST) Api method requests
         /// </summary>
-		Create,
+        Create,
 
         /// <summary>
-        /// Update (PUT) Api method requests
+        ///     Update (PUT) Api method requests
         /// </summary>
-		Update
-	}
+        Update
+    }
 }

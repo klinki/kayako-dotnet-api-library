@@ -1,29 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using KayakoRestApi.IntegrationTests.TestBase;
 using NUnit.Framework;
-using System.Configuration;
-using KayakoRestApi;
-using System.Diagnostics;
-using KayakoRestApi.Core.Staff;
-using KayakoRestApi.Core;
-using System.Xml.Serialization;
-using System.IO;
-using KayakoRestApi.Core.Tickets;
 
 namespace KayakoRestApi.IntegrationTests
 {
-	[TestFixture(Description="A set of tests testing Api methods around Ticket Counts")]
-	public class TicketCountTests : UnitTestBase
-	{
+    [TestFixture(Description = "A set of tests testing Api methods around Ticket Counts")]
+    public class TicketCountTests : UnitTestBase
+    {
         [Test]
-		public void GetAllTicketCount()
-		{
-			TicketCount ticketCount = TestSetup.KayakoApiService.Tickets.GetTicketCounts();
+        public void GetAllTicketCount()
+        {
+            var ticketCount = TestSetup.KayakoApiService.Tickets.GetTicketCounts();
 
-			Assert.IsNotNull(ticketCount, "No ticket counts were returned");
-			
-			OutputMessage<TicketCount>("Ticket Count Result: ", ticketCount);
-		}
-	}
+            Assert.IsNotNull(ticketCount, "No ticket counts were returned");
+
+            this.OutputMessage("Ticket Count Result: ", ticketCount);
+        }
+    }
 }

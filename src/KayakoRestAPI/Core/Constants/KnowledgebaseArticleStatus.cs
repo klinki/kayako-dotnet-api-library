@@ -2,12 +2,12 @@
 
 namespace KayakoRestApi.Core.Constants
 {
-	public enum KnowledgebaseArticleStatus
-	{
-		[XmlEnum(Name = "1")]
-		Published,
+    public enum KnowledgebaseArticleStatus
+    {
+        [XmlEnum(Name = "1")]
+        Published,
 
-		[XmlEnum(Name = "2")]
-		Draft
-	}
+        [XmlEnum(Name = "2")]
+        Draft
+    }
 }

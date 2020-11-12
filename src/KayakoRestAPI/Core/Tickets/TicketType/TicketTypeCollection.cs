@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketType
 {
-	/// <summary>
-	/// Definition of a list of ticket types
-	/// <remarks>
-	/// See : http://wiki.kayako.com/display/DEV/REST+-+TicketType
-	/// </remarks>
-	/// </summary>
+    /// <summary>
+    ///     Definition of a list of ticket types
+    ///     <remarks>
+    ///         See : http://wiki.kayako.com/display/DEV/REST+-+TicketType
+    ///     </remarks>
+    /// </summary>
     [XmlRoot("tickettypes")]
-    public class TicketTypeCollection : List<TicketType>
-    {
-        /// <summary>
-        /// Create a list of ticket types.
-        /// </summary>
-        public TicketTypeCollection()
-        {
-        }
-    }
+    public class TicketTypeCollection : List<TicketType> { }
 }

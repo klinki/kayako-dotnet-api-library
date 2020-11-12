@@ -1,88 +1,74 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using System.Configuration;
-using KayakoRestApi;
 using System.Diagnostics;
-using KayakoRestApi.Core.Users;
 using KayakoRestApi.Core.Constants;
+using KayakoRestApi.Core.Users;
+using KayakoRestApi.IntegrationTests.TestBase;
+using NUnit.Framework;
 
 namespace KayakoRestApi.IntegrationTests
 {
-	[TestFixture(Description = "A set of tests testing Api methods around User Groups")]
-	public class UserGroupTests : UnitTestBase
-	{
-		private UserGroup TestData
-        {
-            get
-            {
-				UserGroup testUserGroup = new UserGroup();
-				testUserGroup.GroupType = UserGroupType.Guest;
-				testUserGroup.IsMaster = false;
-				testUserGroup.Title = "Title User Group";
+    [TestFixture(Description = "A set of tests testing Api methods around User Groups")]
+    public class UserGroupTests : UnitTestBase
+    {
+        private static UserGroup TestData => new UserGroup { GroupType = UserGroupType.Guest, IsMaster = false, Title = "Title User Group" };
 
-                return testUserGroup;
-            }
+        [Test]
+        public void GetAllGetUserGroups()
+        {
+            var userOrganizations = TestSetup.KayakoApiService.Users.GetUserGroups();
+
+            Assert.IsNotNull(userOrganizations, "No user groups were returned");
+            Assert.IsNotEmpty(userOrganizations, "No user groups were returned");
         }
 
-		[Test]
-		public void GetAllGetUserGroups()
-		{
-			UserGroupCollection userOrganizations = TestSetup.KayakoApiService.Users.GetUserGroups();
+        [Test]
+        public void GetUserGroup()
+        {
+            var userGroups = TestSetup.KayakoApiService.Users.GetUserGroups();
 
-			Assert.IsNotNull(userOrganizations, "No user groups were returned");
-			Assert.IsNotEmpty(userOrganizations, "No user groups were returned");
-		}
+            Assert.IsNotNull(userGroups, "No user groups were returned");
+            Assert.IsNotEmpty(userGroups, "No user groups were returned");
 
-		[Test]
-		public void GetUserGroup()
-		{
-			UserGroupCollection userGroups = TestSetup.KayakoApiService.Users.GetUserGroups();
+            var userGroupToGet = userGroups[new Random().Next(userGroups.Count)];
 
-			Assert.IsNotNull(userGroups, "No user groups were returned");
-			Assert.IsNotEmpty(userGroups, "No user groups were returned");
+            Trace.WriteLine("GetUserGroup using user group id: " + userGroupToGet.Id);
 
-			UserGroup userGroupToGet = userGroups[new Random().Next(userGroups.Count)];
+            var userGroup = TestSetup.KayakoApiService.Users.GetUserGroup(userGroupToGet.Id);
 
-			Trace.WriteLine("GetUserGroup using user group id: " + userGroupToGet.Id);
+            this.CompareUserGroup(userGroup, userGroupToGet);
+        }
 
-			UserGroup userGroup = TestSetup.KayakoApiService.Users.GetUserGroup(userGroupToGet.Id);
-
-			CompareUserGroup(userGroup, userGroupToGet);
-		}
-
-        [Test(Description="Tests creating, updating and deleting user groups")]
+        [Test(Description = "Tests creating, updating and deleting user groups")]
         public void CreateUpdateDeleteUserGroup()
         {
-			UserGroup dummyData = TestData;
+            var dummyData = TestData;
 
-			UserGroup createdUserGroup = TestSetup.KayakoApiService.Users.CreateUserGroup(UserGroupRequest.FromResponseData(dummyData));
+            var createdUserGroup = TestSetup.KayakoApiService.Users.CreateUserGroup(UserGroupRequest.FromResponseData(dummyData));
 
             Assert.IsNotNull(createdUserGroup);
             dummyData.Id = createdUserGroup.Id;
-            CompareUserGroup(dummyData, createdUserGroup);
+            this.CompareUserGroup(dummyData, createdUserGroup);
 
-			dummyData.Title = "UPDATED: User Group Title";
+            dummyData.Title = "UPDATED: User Group Title";
 
-            UserGroup updatedUserGroup = TestSetup.KayakoApiService.Users.UpdateUserGroup(UserGroupRequest.FromResponseData(dummyData));
+            var updatedUserGroup = TestSetup.KayakoApiService.Users.UpdateUserGroup(UserGroupRequest.FromResponseData(dummyData));
 
             Assert.IsNotNull(updatedUserGroup);
-            CompareUserGroup(dummyData, updatedUserGroup);
+            this.CompareUserGroup(dummyData, updatedUserGroup);
 
-            bool success = TestSetup.KayakoApiService.Users.DeleteUserGroup(updatedUserGroup.Id);
+            var success = TestSetup.KayakoApiService.Users.DeleteUserGroup(updatedUserGroup.Id);
 
             Assert.IsTrue(success);
         }
 
-		private void CompareUserGroup(UserGroup one, UserGroup two)
+        private void CompareUserGroup(UserGroup one, UserGroup two)
         {
             Assert.AreEqual(one.GroupType, two.GroupType);
-			Assert.AreEqual(one.Id, two.Id);
-			Assert.AreEqual(one.IsMaster, two.IsMaster);
-			Assert.AreEqual(one.Title, two.Title);
+            Assert.AreEqual(one.Id, two.Id);
+            Assert.AreEqual(one.IsMaster, two.IsMaster);
+            Assert.AreEqual(one.Title, two.Title);
 
-			AssertObjectXmlEqual<UserGroup>(one, two);
+            AssertObjectXmlEqual(one, two);
         }
-	}
+    }
 }

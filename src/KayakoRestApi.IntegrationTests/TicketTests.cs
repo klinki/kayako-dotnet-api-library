@@ -1,14 +1,11 @@
 ﻿using System.Linq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
-using System.Configuration;
 using KayakoRestApi.Core.Departments;
-using KayakoRestApi;
 using System.Diagnostics;
 using KayakoRestApi.Core.Constants;
-using KayakoRestApi.Core.Tickets;
+using KayakoRestApi.Core.Tickets.Ticket;
+using KayakoRestApi.IntegrationTests.TestBase;
 
 namespace KayakoRestApi.IntegrationTests
 {
@@ -49,16 +46,16 @@ namespace KayakoRestApi.IntegrationTests
 		[Test(Description="Tests creating, updating and deleting departments")]
 		public void CreateUpdateDeleteTicket()
 		{
-			string subject = "Ticket Subject";
-			string fullname = "Ticket FullName";
-			string email = "ticket@email.com";
-			string contents = "Contents of the ticket";
-			int deptId = 3;
-			int statusId = 1;
-			int priorityId = 1;
-			int typeId = 1;
-			int ownerId = 1;
-			TicketCreationType type = TicketCreationType.Default;
+			const string subject = "Ticket Subject";
+			const string fullname = "Ticket FullName";
+			const string email = "ticket@email.com";
+			const string contents = "Contents of the ticket";
+			const int deptId = 3;
+			const int statusId = 1;
+			const int priorityId = 1;
+			const int typeId = 1;
+			const int ownerId = 1;
+			const TicketRequestCreationType type = TicketRequestCreationType.Default;
 
             TicketRequest request = new TicketRequest()
             {

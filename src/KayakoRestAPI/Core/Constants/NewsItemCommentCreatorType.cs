@@ -2,12 +2,12 @@
 
 namespace KayakoRestApi.Core.Constants
 {
-	public enum NewsItemCommentCreatorType
-	{
-		[XmlEnum(Name = "1")]
-		Staff,
+    public enum NewsItemCommentCreatorType
+    {
+        [XmlEnum(Name = "1")]
+        Staff,
 
-		[XmlEnum(Name = "2")]
-		User
-	}
+        [XmlEnum(Name = "2")]
+        User
+    }
 }

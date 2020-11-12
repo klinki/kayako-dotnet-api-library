@@ -1,110 +1,61 @@
 ﻿using System;
-using System.Xml.Serialization;
 using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace KayakoRestApi.Data
 {
-	[Serializable]
-	public class KNullable<T> : IXmlSerializable
-		where T : struct
-	{
-        private T? _value { get; set; }
+    [Serializable]
+    public class KNullable<T> : IXmlSerializable
+        where T : struct
+    {
+        public KNullable() => this.ValueData = new T?();
 
-        public KNullable()
-        {
-            _value = new T?();
-        }
+        public KNullable(T value) => this.ValueData = value;
 
-        public KNullable(T value)
-        {
-            _value = new T?(value);
-        }
+        private T? ValueData { get; set; }
 
-        public T Value
-        {
-            get
-            {
-                
-                return _value.Value;
-            }
-        }
+        public T Value => this.ValueData.Value;
 
-        public bool HasValue
-        {
-            get
-            {
-                return _value.HasValue;
-            }
-        }
+        public bool HasValue => this.ValueData.HasValue;
 
-		public static KNullable<T> ToKNullable(T value)
-		{
-			return new KNullable<T>(value);
-		}
+        public static KNullable<T> ToKNullable(T value) => new KNullable<T>(value);
 
-        public static implicit operator KNullable<T>(T value)
-        {
-            return new KNullable<T>(value);
-        }
+        public static implicit operator KNullable<T>(T value) => new KNullable<T>(value);
 
-		public static T FromKNullable(KNullable<T> value)
-		{
-			return value.Value;
-		}
+        public static T FromKNullable(KNullable<T> value) => value.Value;
 
-        public static explicit operator T(KNullable<T> value)
-        {
-            return value.Value;
-        }
+        public static explicit operator T(KNullable<T> value) => value.Value;
 
-		public override int GetHashCode()
-		{
-			return _value.GetHashCode();
-		}
+        public override int GetHashCode() => this.ValueData.GetHashCode();
 
-		public override bool Equals(object obj)
-		{
-			return _value.Equals(obj);
-		}
+        public override bool Equals(object obj) => this.ValueData.Equals(obj);
 
-		#region IXmlSerializable Methods
+        #region IXmlSerializable Methods
 
-		public System.Xml.Schema.XmlSchema GetSchema()
-        {
-            return null;
-        }
+        public XmlSchema GetSchema() => null;
 
         public void ReadXml(XmlReader reader)
         {
             reader.MoveToContent();
 
-			if (!reader.IsEmptyElement)
-			{
-				string value = reader.ReadElementContentAsString();
+            if (!reader.IsEmptyElement)
+            {
+                var value = reader.ReadElementContentAsString();
 
-				if (!String.IsNullOrEmpty(value))
-				{
-					_value = (T)Convert.ChangeType(value, typeof(T));
-				}
-			}
-			else
-			{
-				_value = new T?();
-			}
+                if (!string.IsNullOrEmpty(value))
+                {
+                    this.ValueData = (T) Convert.ChangeType(value, typeof(T));
+                }
+            }
+            else
+            {
+                this.ValueData = new T?();
+            }
         }
 
-        public void WriteXml(XmlWriter writer)
-        {
-			if (_value.HasValue)
-            {
-				writer.WriteString(_value.Value.ToString());
-			}
-			else
-			{
-				writer.WriteString("");
-			}
-		}
+        public void WriteXml(XmlWriter writer) => writer.WriteString(this.ValueData.HasValue ? this.ValueData.Value.ToString() : string.Empty);
 
-		#endregion
-	}
+        #endregion
+    }
 }

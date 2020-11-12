@@ -5,6 +5,9 @@
 
         <DebugType>Full</DebugType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>kayako.snk</AssemblyOriginatorKeyFile>
+        <PublicSign>true</PublicSign>
     </PropertyGroup>
 
     <ItemGroup>

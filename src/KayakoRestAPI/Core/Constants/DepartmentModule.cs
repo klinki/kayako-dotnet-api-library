@@ -2,12 +2,12 @@
 
 namespace KayakoRestApi.Core.Constants
 {
-	public enum DepartmentModule
-	{
-		[XmlEnum(Name = "tickets")]
-		Tickets,
+    public enum DepartmentModule
+    {
+        [XmlEnum(Name = "tickets")]
+        Tickets,
 
-		[XmlEnum(Name = "livechat")]
-		LiveChat
-	}
+        [XmlEnum(Name = "livechat")]
+        LiveChat
+    }
 }

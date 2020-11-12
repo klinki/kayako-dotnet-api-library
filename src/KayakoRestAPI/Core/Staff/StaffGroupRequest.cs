@@ -1,4 +1,5 @@
 ﻿using KayakoRestApi.RequestBase;
+using KayakoRestApi.RequestBase.Attributes;
 
 namespace KayakoRestApi.Core.Staff
 {
@@ -16,14 +17,8 @@ namespace KayakoRestApi.Core.Staff
         [ResponseProperty("IsAdmin")]
         public bool IsAdmin { get; set; }
 
-        public static StaffGroupRequest FromResponseData(StaffGroup responseData)
-        {
-            return StaffGroupRequest.FromResponseType<StaffGroup, StaffGroupRequest>(responseData);
-        }
+        public static StaffGroupRequest FromResponseData(StaffGroup responseData) => FromResponseType<StaffGroup, StaffGroupRequest>(responseData);
 
-        public static StaffGroup ToResponseData(StaffGroupRequest requestData)
-        {
-            return StaffGroupRequest.ToResponseType<StaffGroupRequest, StaffGroup>(requestData);
-        }
+        public static StaffGroup ToResponseData(StaffGroupRequest requestData) => ToResponseType<StaffGroupRequest, StaffGroup>(requestData);
     }
 }

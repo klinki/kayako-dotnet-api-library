@@ -1,5 +1,4 @@
-﻿using System;
-using KayakoRestApi.Controllers;
+﻿using KayakoRestApi.Controllers;
 using KayakoRestApi.Core.Constants;
 using KayakoRestApi.Core.Test;
 using KayakoRestApi.Net;
@@ -8,84 +7,84 @@ using NUnit.Framework;
 
 namespace KayakoRestApi.UnitTests.Core
 {
-	[TestFixture(Description = "A set of tests testing Api methods around Cusom Fields")]
-	public class CoreControllerTests
-	{
-		private ICoreController _coreController;
-		private Mock<IKayakoApiRequest> _kayakoApiRequest;
+    [TestFixture(Description = "A set of tests testing Api methods around Cusom Fields")]
+    public class CoreControllerTests
+    {
+        [SetUp]
+        public void SetUp()
+        {
+            this.kayakoApiRequest = new Mock<IKayakoApiRequest>();
+            this.coreController = new CoreController(this.kayakoApiRequest.Object);
 
-		private TestData _getTestData;
+            this.getTestData = new TestData("Test");
+        }
 
-		[SetUp]
-		public void SetUp()
-		{
-			_kayakoApiRequest = new Mock<IKayakoApiRequest>();
-			_coreController = new CoreController(_kayakoApiRequest.Object);
+        private ICoreController coreController;
+        private Mock<IKayakoApiRequest> kayakoApiRequest;
 
-			_getTestData = new TestData("Test");
-		}
+        private TestData getTestData;
 
-		[Test]
-		public void GetList()
-		{
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<TestData>(ApiBaseMethods.CoreTest)).Returns(_getTestData);
-			var getListResult = _coreController.GetListTest();
+        [Test]
+        public void GetList()
+        {
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<TestData>(ApiBaseMethods.CoreTest)).Returns(this.getTestData);
+            var getListResult = this.coreController.GetListTest();
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<TestData>(ApiBaseMethods.CoreTest), Times.Once());
-			Assert.That(getListResult, Is.EqualTo(_getTestData.Data));
-		}
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<TestData>(ApiBaseMethods.CoreTest), Times.Once());
+            Assert.That(getListResult, Is.EqualTo(this.getTestData.Data));
+        }
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void Get(int id)
-		{
-			string apiMethod = String.Format("{0}/{1}", ApiBaseMethods.CoreTest, id);
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<TestData>(apiMethod)).Returns(_getTestData);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void Get(int id)
+        {
+            var apiMethod = string.Format("{0}/{1}", ApiBaseMethods.CoreTest, id);
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<TestData>(apiMethod)).Returns(this.getTestData);
 
-			var getResult = _coreController.GetTest(id);
+            var getResult = this.coreController.GetTest(id);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<TestData>(apiMethod), Times.Once());
-			Assert.That(getResult, Is.EqualTo(_getTestData.Data));
-		}
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<TestData>(apiMethod), Times.Once());
+            Assert.That(getResult, Is.EqualTo(this.getTestData.Data));
+        }
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void Put(int id)
-		{
-			string apiMethod = String.Format("{0}/{1}", ApiBaseMethods.CoreTest, id);
-			_kayakoApiRequest.Setup(x => x.ExecutePut<TestData>(apiMethod, "")).Returns(_getTestData);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void Put(int id)
+        {
+            var apiMethod = string.Format("{0}/{1}", ApiBaseMethods.CoreTest, id);
+            this.kayakoApiRequest.Setup(x => x.ExecutePut<TestData>(apiMethod, string.Empty)).Returns(this.getTestData);
 
-			var putResult = _coreController.PutTest(id);
-			
-			_kayakoApiRequest.Verify(x => x.ExecutePut<TestData>(apiMethod, ""), Times.Once());
-			Assert.That(putResult, Is.EqualTo(_getTestData.Data));
-		}
+            var putResult = this.coreController.PutTest(id);
 
-		[Test]
-		public void Post()
-		{
-			_kayakoApiRequest.Setup(x => x.ExecutePost<TestData>(ApiBaseMethods.CoreTest, "")).Returns(_getTestData);
+            this.kayakoApiRequest.Verify(x => x.ExecutePut<TestData>(apiMethod, string.Empty), Times.Once());
+            Assert.That(putResult, Is.EqualTo(this.getTestData.Data));
+        }
 
-			var postResult = _coreController.PostTest();
+        [Test]
+        public void Post()
+        {
+            this.kayakoApiRequest.Setup(x => x.ExecutePost<TestData>(ApiBaseMethods.CoreTest, string.Empty)).Returns(this.getTestData);
 
-			_kayakoApiRequest.Verify(x => x.ExecutePost<TestData>(ApiBaseMethods.CoreTest, ""), Times.Once());
-			Assert.That(postResult, Is.EqualTo(_getTestData.Data));
-		}
+            var postResult = this.coreController.PostTest();
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void Delete(int id)
-		{
-			string apiMethod = String.Format("{0}/{1}", ApiBaseMethods.CoreTest, id);
-			_kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(true);
+            this.kayakoApiRequest.Verify(x => x.ExecutePost<TestData>(ApiBaseMethods.CoreTest, string.Empty), Times.Once());
+            Assert.That(postResult, Is.EqualTo(this.getTestData.Data));
+        }
 
-			var deleteResult = _coreController.DeleteTest(id);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void Delete(int id)
+        {
+            var apiMethod = string.Format("{0}/{1}", ApiBaseMethods.CoreTest, id);
+            this.kayakoApiRequest.Setup(x => x.ExecuteDelete(apiMethod)).Returns(true);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod), Times.Once());
-			Assert.That(deleteResult, Is.EqualTo(true));
-		}
-	}
+            var deleteResult = this.coreController.DeleteTest(id);
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteDelete(apiMethod), Times.Once());
+            Assert.That(deleteResult, Is.EqualTo(true));
+        }
+    }
 }

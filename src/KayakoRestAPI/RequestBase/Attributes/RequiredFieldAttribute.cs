@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace KayakoRestApi.RequestBase
+namespace KayakoRestApi.RequestBase.Attributes
 {
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple=false)]
-	internal sealed class RequiredFieldAttribute : Attribute
-	{
-		public RequestTypes[] RequestTypes { get; set; }
+    [AttributeUsage(AttributeTargets.Property)]
+    internal sealed class RequiredFieldAttribute : Attribute
+    {
+        public RequiredFieldAttribute() => this.RequestTypes = new RequestTypes[0];
 
-		public RequiredFieldAttribute()
-		{
-			RequestTypes = new RequestTypes[0];
-		}
+        public RequiredFieldAttribute(RequestTypes types)
+            : base() => this.RequestTypes = new[] { types };
 
-		public RequiredFieldAttribute(RequestTypes types) : base()
-		{
-			RequestTypes = new RequestTypes[] { types };
-		}
-	}
+        public RequestTypes[] RequestTypes { get; }
+    }
 }

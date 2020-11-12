@@ -1,40 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization;
 
 namespace KayakoRestApi.Core.Test
 {
-	[Serializable]
-	public class TestData
-	{
-		private string _data { get; set; }
+    [Serializable]
+    public class TestData
+    {
+        public TestData() { }
 
-		public TestData()
-		{
-		}
+        public TestData(string data) => this.DataValue = data;
 
-		public TestData(string data)
-		{
-			_data = data;
-		}
+        private string DataValue { get; set; }
 
-		public static implicit operator string(TestData testData)
-		{
-			return testData.Data;
-		}
+        public string Data => this.DataValue;
 
-		public override string ToString()
-		{
-			return _data;
-		}
+        public static implicit operator string(TestData testData) => testData.Data;
 
-		public string Data
-		{
-			get
-			{
-				return _data;
-			}
-		}
-	}
+        public override string ToString() => this.DataValue;
+    }
 }

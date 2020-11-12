@@ -1,90 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using KayakoRestApi.Text;
 using System.Reflection;
+using KayakoRestApi.Text;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketSearch
 {
     /// <summary>
-    /// Object to build up a search query which will search tickets
-    /// <remarks>http://wiki.kayako.com/display/DEV/REST+-+TicketSearch#REST-TicketSearch-PostVariables</remarks>
+    ///     Object to build up a search query which will search tickets
+    ///     <remarks>http://wiki.kayako.com/display/DEV/REST+-+TicketSearch#REST-TicketSearch-PostVariables</remarks>
     /// </summary>
     public class TicketSearchQuery
     {
-        public string Query { get; set; }
-
-		private List<TicketSearchField> _searchFields { get; set; }
-		public List<TicketSearchField> SearchFields
-		{
-			get
-			{
-				return _searchFields;
-			}
-			set
-			{
-				_searchFields = value;
-			}
-		}
-
         /// <summary>
-        /// Initialises the ticket search query with the query data
+        ///     Initialises the ticket search query with the query data
         /// </summary>
         public TicketSearchQuery(string query)
         {
-            Query = query;
-            _searchFields = new List<TicketSearchField>();
+            this.Query = query;
+            this.SearchFieldsValue = new List<TicketSearchField>();
         }
 
         /// <summary>
-        /// Initialises the ticket search query with the query data
+        ///     Initialises the ticket search query with the query data
         /// </summary>
         public TicketSearchQuery(string query, TicketSearchField[] searchFields)
         {
-            Query = query;
-            _searchFields = new List<TicketSearchField>(searchFields);
+            this.Query = query;
+            this.SearchFieldsValue = new List<TicketSearchField>(searchFields);
+        }
+
+        public string Query { get; }
+
+        private List<TicketSearchField> SearchFieldsValue { get; set; }
+
+        public List<TicketSearchField> SearchFields
+        {
+            get => this.SearchFieldsValue;
+            set => this.SearchFieldsValue = value;
         }
 
         /// <summary>
-        /// Populates the post parameters to send to Kayako Api service
+        ///     Populates the post parameters to send to Kayako Api service
         /// </summary>
         /// <returns></returns>
         internal RequestBodyBuilder GetRequestBodyParameters()
         {
-            RequestBodyBuilder parameters = new RequestBodyBuilder();
-            parameters.AppendRequestData("query", Query);
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestData("query", this.Query);
 
-            FieldInfo[] props = typeof(TicketSearchField).GetFields(BindingFlags.Public | BindingFlags.Static);
+            var props = typeof(TicketSearchField).GetFields(BindingFlags.Public | BindingFlags.Static);
 
-            foreach (FieldInfo p in props)
+            foreach (var p in props)
             {
-                if (_searchFields.Contains((TicketSearchField)p.GetValue(typeof(TicketSearchField))))
+                if (this.SearchFieldsValue.Contains((TicketSearchField) p.GetValue(typeof(TicketSearchField))))
                 {
-                    RequestParameterNameAttribute[] att = (RequestParameterNameAttribute[])p.GetCustomAttributes(typeof(RequestParameterNameAttribute), false);
-
-                    if(att != null)
+                    if (p.GetCustomAttributes(typeof(RequestParameterNameAttribute), false) is RequestParameterNameAttribute[] att)
                     {
-                        parameters.AppendRequestData(att[0].RequestName, 1);   
+                        parameters.AppendRequestData(att[0].RequestName, 1);
                     }
                 }
             }
-
 
             return parameters;
         }
 
         /// <summary>
-        /// Add a search field to be included in the search
+        ///     Add a search field to be included in the search
         /// </summary>
         /// <param name="searchField"></param>
-        public void AddSearchField(TicketSearchField searchField)
-        {
-            _searchFields.Add(searchField);
-        }
+        public void AddSearchField(TicketSearchField searchField) => this.SearchFieldsValue.Add(searchField);
     }
 
     /// <summary>
-    /// Enum representing the various search fields available
+    ///     Enum representing the various search fields available
     /// </summary>
     public enum TicketSearchField
     {
@@ -125,11 +113,8 @@ namespace KayakoRestApi.Core.Tickets
     [AttributeUsage(AttributeTargets.Field)]
     internal sealed class RequestParameterNameAttribute : Attribute
     {
-        public string RequestName { get; set; }
+        public RequestParameterNameAttribute(string requestname) => this.RequestName = requestname;
 
-        public RequestParameterNameAttribute(string requestname)
-        {
-            RequestName = requestname;
-        }
+        public string RequestName { get; }
     }
 }

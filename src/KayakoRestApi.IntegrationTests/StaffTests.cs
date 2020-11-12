@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using System.Configuration;
-using KayakoRestApi;
 using System.Diagnostics;
 using KayakoRestApi.Core.Staff;
+using KayakoRestApi.IntegrationTests.TestBase;
+using NUnit.Framework;
 
 namespace KayakoRestApi.IntegrationTests
 {
-	[TestFixture(Description = "A set of tests testing Api methods around Staff Users")]
-	public class StaffTests : UnitTestBase
-	{
+    [TestFixture(Description = "A set of tests testing Api methods around Staff Users")]
+    public class StaffTests : UnitTestBase
+    {
         private StaffUser TestData
         {
             get
             {
-                StaffUser staffUser = new StaffUser();
+                var staffUser = new StaffUser();
                 staffUser.Designation = "Mr";
                 staffUser.Email = "test@test.com";
                 staffUser.EnableDst = true;
@@ -26,78 +23,80 @@ namespace KayakoRestApi.IntegrationTests
                 staffUser.IsEnabled = true;
                 staffUser.LastName = "LastName";
                 staffUser.MobileNumber = "012345678911";
-				//Can't test signature as it doesn't come back from the Api
-				staffUser.Signature = "My Staff Greeting";
+
+                //Can't test signature as it doesn't come back from the Api
+                staffUser.Signature = "My Staff Greeting";
                 staffUser.TimeZone = "GMT";
                 staffUser.UserName = "teststaff";
-                staffUser.FullName = String.Format("{0} {1}", staffUser.FirstName, staffUser.LastName);
+                staffUser.FullName = string.Format("{0} {1}", staffUser.FirstName, staffUser.LastName);
 
                 return staffUser;
             }
         }
 
-		[Test]
-		public void GetAllStaffUsers()
-		{
-			StaffUserCollection staffUsers = TestSetup.KayakoApiService.Staff.GetStaffUsers();
+        [Test]
+        public void GetAllStaffUsers()
+        {
+            var staffUsers = TestSetup.KayakoApiService.Staff.GetStaffUsers();
 
             Assert.IsNotNull(staffUsers, "No staff users were returned");
             Assert.IsNotEmpty(staffUsers, "No staff users were returned");
-		}
+        }
 
-		[Test]
-		public void GetStaffUser()
-		{
-			StaffUserCollection staffUsers = TestSetup.KayakoApiService.Staff.GetStaffUsers();
+        [Test]
+        public void GetStaffUser()
+        {
+            var staffUsers = TestSetup.KayakoApiService.Staff.GetStaffUsers();
 
             Assert.IsNotNull(staffUsers, "No staff users were returned");
             Assert.IsNotEmpty(staffUsers, "No staff users were returned");
 
-			StaffUser staffUserToGet = staffUsers[new Random().Next(staffUsers.Count)];
+            var staffUserToGet = staffUsers[new Random().Next(staffUsers.Count)];
 
             Trace.WriteLine("GetStaffUser using staff user id: " + staffUserToGet.Id);
 
-			StaffUser staffUser = TestSetup.KayakoApiService.Staff.GetStaffUser(staffUserToGet.Id);
+            var staffUser = TestSetup.KayakoApiService.Staff.GetStaffUser(staffUserToGet.Id);
 
-			CompareStaffUsers(staffUser, staffUserToGet);
-		}
+            this.CompareStaffUsers(staffUser, staffUserToGet);
+        }
 
-        [Test(Description="Tests creating, updating and deleting staff users")]
+        [Test(Description = "Tests creating, updating and deleting staff users")]
         public void CreateUpdateDeleteStaffUser()
         {
-            StaffUser dummyStaffUser = TestData;
+            var dummyStaffUser = this.TestData;
 
-			StaffUserRequest req = StaffUserRequest.FromResponseData(dummyStaffUser);
-			req.Password = "password123";
+            var req = StaffUserRequest.FromResponseData(dummyStaffUser);
+            req.Password = "password123";
 
-			StaffUser createdStaffUser = TestSetup.KayakoApiService.Staff.CreateStaffUser(req);
+            var createdStaffUser = TestSetup.KayakoApiService.Staff.CreateStaffUser(req);
 
             Assert.IsNotNull(createdStaffUser);
-			dummyStaffUser.Id = createdStaffUser.Id;
-            CompareStaffUsers(dummyStaffUser, createdStaffUser);
+            dummyStaffUser.Id = createdStaffUser.Id;
+            this.CompareStaffUsers(dummyStaffUser, createdStaffUser);
 
             dummyStaffUser.Designation = "Mrs";
             dummyStaffUser.Email = "updatedtest@test.com";
             dummyStaffUser.EnableDst = false;
             dummyStaffUser.FirstName = "UpdatedFirstName";
             dummyStaffUser.Greeting = "UpdatedGreetingtext";
-			StaffGroupCollection staffGroups = TestSetup.KayakoApiService.Staff.GetStaffGroups();
-            dummyStaffUser.GroupId = staffGroups[staffGroups.Count - 1].Id;
+            var staffGroups = TestSetup.KayakoApiService.Staff.GetStaffGroups();
+            dummyStaffUser.GroupId = staffGroups[^1].Id;
             dummyStaffUser.IsEnabled = false;
             dummyStaffUser.LastName = "UpdatedLastName";
             dummyStaffUser.MobileNumber = "0798765432";
-			//Can't test signature as it doesn't come back from the Api
-			//dummyStaffUser.Signature = "Signature Updated";
+
+            //Can't test signature as it doesn't come back from the Api
+            //dummyStaffUser.Signature = "Signature Updated";
             dummyStaffUser.TimeZone = "GMT BST";
             dummyStaffUser.UserName = "updatedUser";
 
-			StaffUser updatedStaffUser = TestSetup.KayakoApiService.Staff.UpdateStaffUser(StaffUserRequest.FromResponseData(dummyStaffUser));
-			dummyStaffUser.FullName = String.Format("{0} {1}", dummyStaffUser.FirstName, dummyStaffUser.LastName);
+            var updatedStaffUser = TestSetup.KayakoApiService.Staff.UpdateStaffUser(StaffUserRequest.FromResponseData(dummyStaffUser));
+            dummyStaffUser.FullName = string.Format("{0} {1}", dummyStaffUser.FirstName, dummyStaffUser.LastName);
 
             Assert.IsNotNull(updatedStaffUser);
-            CompareStaffUsers(dummyStaffUser, updatedStaffUser);
+            this.CompareStaffUsers(dummyStaffUser, updatedStaffUser);
 
-            bool success = TestSetup.KayakoApiService.Staff.DeleteStaffUser(updatedStaffUser.Id);
+            var success = TestSetup.KayakoApiService.Staff.DeleteStaffUser(updatedStaffUser.Id);
 
             Assert.IsTrue(success);
         }
@@ -115,12 +114,13 @@ namespace KayakoRestApi.IntegrationTests
             Assert.AreEqual(one.IsEnabled, two.IsEnabled);
             Assert.AreEqual(one.LastName, two.LastName);
             Assert.AreEqual(one.MobileNumber, two.MobileNumber);
+
             //Can't test signature as it doesn't come back from the Api
-			//Assert.AreEqual(one.Signature, two.Signature);
+            //Assert.AreEqual(one.Signature, two.Signature);
             Assert.AreEqual(one.TimeZone, two.TimeZone);
             Assert.AreEqual(one.UserName, two.UserName);
 
-			AssertObjectXmlEqual<StaffUser>(one, two);
+            AssertObjectXmlEqual(one, two);
         }
-	}
+    }
 }

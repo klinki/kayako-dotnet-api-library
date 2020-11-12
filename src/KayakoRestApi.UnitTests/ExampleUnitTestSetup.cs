@@ -6,65 +6,65 @@ using NUnit.Framework;
 
 namespace KayakoRestApi.UnitTests
 {
-	[TestFixture]
-	public class ExampleUnitTestSetup
-	{
-		private Mock<IKayakoClient> _kayakoClient;
-		private Mock<ICoreController> _coreController;
-		private Mock<ICustomFieldController> _customFieldController;
-		private Mock<IDepartmentController> _departmentController;
-		private Mock<IKnowledgebaseController> _knowledgebaseController;
-		private Mock<INewsController> _newsController;
-		private Mock<IStaffController> _staffController;
-		private Mock<ITicketController> _ticketController;
-		private Mock<ITroubleshooterController> _troubleshooterController;
-		private Mock<IUserController> _userController;
+    [TestFixture]
+    public class ExampleUnitTestSetup
+    {
+        [SetUp]
+        public void Setup()
+        {
+            this.coreController = new Mock<ICoreController>();
+            this.customFieldController = new Mock<ICustomFieldController>();
+            this.departmentController = new Mock<IDepartmentController>();
+            this.knowledgebaseController = new Mock<IKnowledgebaseController>();
+            this.newsController = new Mock<INewsController>();
+            this.staffController = new Mock<IStaffController>();
+            this.ticketController = new Mock<ITicketController>();
+            this.troubleshooterController = new Mock<ITroubleshooterController>();
+            this.userController = new Mock<IUserController>();
 
-		[SetUp]
-		public void Setup()
-		{
-			_coreController = new Mock<ICoreController>();
-			_customFieldController = new Mock<ICustomFieldController>();
-			_departmentController = new Mock<IDepartmentController>();
-			_knowledgebaseController = new Mock<IKnowledgebaseController>();
-			_newsController = new Mock<INewsController>();
-			_staffController = new Mock<IStaffController>();
-			_ticketController = new Mock<ITicketController>();
-			_troubleshooterController = new Mock<ITroubleshooterController>();
-			_userController = new Mock<IUserController>();
+            this.kayakoClient = new Mock<IKayakoClient>();
+            this.kayakoClient.Setup(x => x.Core).Returns(this.coreController.Object);
+            this.kayakoClient.Setup(x => x.CustomFields).Returns(this.customFieldController.Object);
+            this.kayakoClient.Setup(x => x.Departments).Returns(this.departmentController.Object);
+            this.kayakoClient.Setup(x => x.Knowledgebase).Returns(this.knowledgebaseController.Object);
+            this.kayakoClient.Setup(x => x.News).Returns(this.newsController.Object);
+            this.kayakoClient.Setup(x => x.Staff).Returns(this.staffController.Object);
+            this.kayakoClient.Setup(x => x.Tickets).Returns(this.ticketController.Object);
+            this.kayakoClient.Setup(x => x.Troubleshooter).Returns(this.troubleshooterController.Object);
+            this.kayakoClient.Setup(x => x.Users).Returns(this.userController.Object);
+        }
 
-			_kayakoClient = new Mock<IKayakoClient>();
-			_kayakoClient.Setup(x => x.Core).Returns(_coreController.Object);
-			_kayakoClient.Setup(x => x.CustomFields).Returns(_customFieldController.Object);
-			_kayakoClient.Setup(x => x.Departments).Returns(_departmentController.Object);
-			_kayakoClient.Setup(x => x.Knowledgebase).Returns(_knowledgebaseController.Object);
-			_kayakoClient.Setup(x => x.News).Returns(_newsController.Object);
-			_kayakoClient.Setup(x => x.Staff).Returns(_staffController.Object);
-			_kayakoClient.Setup(x => x.Tickets).Returns(_ticketController.Object);
-			_kayakoClient.Setup(x => x.Troubleshooter).Returns(_troubleshooterController.Object);
-			_kayakoClient.Setup(x => x.Users).Returns(_userController.Object);
-		}
+        private Mock<IKayakoClient> kayakoClient;
+        private Mock<ICoreController> coreController;
+        private Mock<ICustomFieldController> customFieldController;
+        private Mock<IDepartmentController> departmentController;
+        private Mock<IKnowledgebaseController> knowledgebaseController;
+        private Mock<INewsController> newsController;
+        private Mock<IStaffController> staffController;
+        private Mock<ITicketController> ticketController;
+        private Mock<ITroubleshooterController> troubleshooterController;
+        private Mock<IUserController> userController;
 
-		[Test]
-		public void ListDepartments()
-		{
-			var departmentCollection = new DepartmentCollection
-				{
-					new Department {Title = "Department 1"},
-					new Department {Title = "Department 2"},
-					new Department {Title = "Department 3"}
-				};
+        [Test]
+        public void ListDepartments()
+        {
+            var departmentCollection = new DepartmentCollection
+            {
+                new Department { Title = "Department 1" },
+                new Department { Title = "Department 2" },
+                new Department { Title = "Department 3" }
+            };
 
-			_departmentController.Setup(x => x.GetDepartments()).Returns(departmentCollection);
+            this.departmentController.Setup(x => x.GetDepartments()).Returns(departmentCollection);
 
-			var departments = _kayakoClient.Object.Departments.GetDepartments();
+            var departments = this.kayakoClient.Object.Departments.GetDepartments();
 
-			Assert.That(departments, Is.EqualTo(departmentCollection));
+            Assert.That(departments, Is.EqualTo(departmentCollection));
 
-			foreach (var department in departments)
-			{
-				Trace.WriteLine(department.Title);
-			}
-		}
-	}
+            foreach (var department in departments)
+            {
+                Trace.WriteLine(department.Title);
+            }
+        }
+    }
 }

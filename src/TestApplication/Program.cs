@@ -49,13 +49,9 @@ namespace KayakoRestAPI.Testing
         {
             var serializer = new XmlSerializer(typeof(T));
 
-            using (var fs = new FileStream(xmlFile, FileMode.Open))
-            {
-                using (var xtr = new XmlTextReader(fs))
-                {
-                    return (T) serializer.Deserialize(xtr);
-                }
-            }
+            using var fs = new FileStream(xmlFile, FileMode.Open);
+            using var xtr = new XmlTextReader(fs);
+            return (T) serializer.Deserialize(xtr);
         }
 
         private static void OutputData<T>(string prefix, object o)

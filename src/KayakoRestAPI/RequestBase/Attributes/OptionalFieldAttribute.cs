@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace KayakoRestApi.RequestBase
+namespace KayakoRestApi.RequestBase.Attributes
 {
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    internal sealed class OptionalFieldAttribute : Attribute
-	{
-		public OptionalFieldAttribute()
-			: base()
-		{
-		}
-	}
+    [AttributeUsage(AttributeTargets.Property)]
+    internal sealed class OptionalFieldAttribute : Attribute { }
 }

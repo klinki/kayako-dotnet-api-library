@@ -2,12 +2,12 @@
 
 namespace KayakoRestApi.Core.Constants
 {
-	public enum DepartmentType
-	{
-		[XmlEnum(Name = "public")]
-		Public,
+    public enum DepartmentType
+    {
+        [XmlEnum(Name = "public")]
+        Public,
 
-		[XmlEnum(Name = "private")]
-		Private
-	}
+        [XmlEnum(Name = "private")]
+        Private
+    }
 }

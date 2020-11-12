@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketAttachment
 {
     [XmlRoot("attachments")]
-    public class TicketAttachmentCollection : List<TicketAttachment>
-    {
-        public TicketAttachmentCollection()
-        {
-        }
-    }
+    public class TicketAttachmentCollection : List<TicketAttachment> { }
 }

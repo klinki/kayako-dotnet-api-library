@@ -4,26 +4,19 @@ using System.Xml.Serialization;
 
 namespace KayakoRestApi.UnitTests.Utilities
 {
-	public class XmlDataUtility
-	{
-		public static T ReadFromFile<T>(string filePath)
-		{
-			return DeserializeObject<T>(filePath);
-		}
+    public class XmlDataUtility
+    {
+        public static T ReadFromFile<T>(string filePath) => DeserializeObject<T>(filePath);
 
-		private static T DeserializeObject<T>(string filePah)
-		{
-			var xmlFile = Path.Combine(Directory.GetCurrentDirectory(), filePah);
+        private static T DeserializeObject<T>(string filePah)
+        {
+            var xmlFile = Path.Combine(Directory.GetCurrentDirectory(), filePah);
 
-			XmlSerializer serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(typeof(T));
 
-			using (FileStream fs = new FileStream(xmlFile, FileMode.Open))
-			{
-				using (XmlTextReader xtr = new XmlTextReader(fs))
-				{
-					return (T)serializer.Deserialize(xtr);
-				}
-			}
-		}
-	}
+            using var fs = new FileStream(xmlFile, FileMode.Open);
+            using var xtr = new XmlTextReader(fs);
+            return (T) serializer.Deserialize(xtr);
+        }
+    }
 }

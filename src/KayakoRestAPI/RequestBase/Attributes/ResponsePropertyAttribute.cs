@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace KayakoRestApi.RequestBase
+namespace KayakoRestApi.RequestBase.Attributes
 {
-	[AttributeUsage(AttributeTargets.Property)]
-	internal sealed class ResponsePropertyAttribute : Attribute
-	{
-		public string RepsonseProperty { get; set; }
+    [AttributeUsage(AttributeTargets.Property)]
+    internal sealed class ResponsePropertyAttribute : Attribute
+    {
+        public ResponsePropertyAttribute(string repsonseProperty) => this.RepsonseProperty = repsonseProperty;
 
-		public ResponsePropertyAttribute(string repsonseProperty)
-		{
-			RepsonseProperty = repsonseProperty;
-		}
-	}
+        public string RepsonseProperty { get; }
+    }
 }

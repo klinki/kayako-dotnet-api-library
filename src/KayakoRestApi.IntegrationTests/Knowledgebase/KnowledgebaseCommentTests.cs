@@ -1,83 +1,83 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using KayakoRestApi.Core.Constants;
 using KayakoRestApi.Core.Knowledgebase;
+using KayakoRestApi.IntegrationTests.TestBase;
 using NUnit.Framework;
 
 namespace KayakoRestApi.IntegrationTests.Knowledgebase
 {
-	[TestFixture]
-	public class KnowledgebaseCommentTests : UnitTestBase
-	{
-		[Test]
-		public void GetKnowledgebaseComments()
-		{
-			var knowledgebaseArticles = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseArticles();
+    [TestFixture]
+    public class KnowledgebaseCommentTests : UnitTestBase
+    {
+        [Test]
+        public void GetKnowledgebaseComments()
+        {
+            var knowledgebaseArticles = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseArticles();
 
-			Assert.IsNotNull(knowledgebaseArticles);
-			Assert.IsNotEmpty(knowledgebaseArticles);
+            Assert.IsNotNull(knowledgebaseArticles);
+            Assert.IsNotEmpty(knowledgebaseArticles);
 
-			var knowledgebaseArticle = knowledgebaseArticles.FirstOrDefault(article => article.TotalComments > 0);
+            var knowledgebaseArticle = knowledgebaseArticles.FirstOrDefault(article => article.TotalComments > 0);
 
-			Assert.IsNotNull(knowledgebaseArticle);
+            Assert.IsNotNull(knowledgebaseArticle);
 
-			var knowledgebaseComments = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseComments(knowledgebaseArticle.Id);
+            var knowledgebaseComments = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseComments(knowledgebaseArticle.Id);
 
-			Assert.IsNotNull(knowledgebaseComments);
-			Assert.IsNotEmpty(knowledgebaseComments);
-		}
+            Assert.IsNotNull(knowledgebaseComments);
+            Assert.IsNotEmpty(knowledgebaseComments);
+        }
 
-		[Test]
-		public void GetKnowledgebaseComment()
-		{
-			var knowledgebaseArticles = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseArticles();
+        [Test]
+        public void GetKnowledgebaseComment()
+        {
+            var knowledgebaseArticles = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseArticles();
 
-			Assert.IsNotNull(knowledgebaseArticles);
-			Assert.IsNotEmpty(knowledgebaseArticles);
+            Assert.IsNotNull(knowledgebaseArticles);
+            Assert.IsNotEmpty(knowledgebaseArticles);
 
-			var knowledgebaseArticle = knowledgebaseArticles.FirstOrDefault(article => article.TotalComments > 0);
+            var knowledgebaseArticle = knowledgebaseArticles.FirstOrDefault(article => article.TotalComments > 0);
 
-			Assert.IsNotNull(knowledgebaseArticle);
+            Assert.IsNotNull(knowledgebaseArticle);
 
-			var knowledgebaseComments = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseComments(knowledgebaseArticle.Id);
+            var knowledgebaseComments = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseComments(knowledgebaseArticle.Id);
 
-			Assert.IsNotNull(knowledgebaseComments);
-			Assert.IsNotEmpty(knowledgebaseComments);
+            Assert.IsNotNull(knowledgebaseComments);
+            Assert.IsNotEmpty(knowledgebaseComments);
 
-			var knowlegebaseComment = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseComment(knowledgebaseComments.First().Id);
+            var knowlegebaseComment = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseComment(knowledgebaseComments.First().Id);
 
-			Assert.IsNotNull(knowlegebaseComment);
-		}
+            Assert.IsNotNull(knowlegebaseComment);
+        }
 
-		[Test]
-		public void CreateDeleteKnowledgebaseComment()
-		{
-			var knowledgebaseArticles = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseArticles();
+        [Test]
+        public void CreateDeleteKnowledgebaseComment()
+        {
+            var knowledgebaseArticles = TestSetup.KayakoApiService.Knowledgebase.GetKnowledgebaseArticles();
 
-			Assert.IsNotNull(knowledgebaseArticles);
-			Assert.IsNotEmpty(knowledgebaseArticles);
+            Assert.IsNotNull(knowledgebaseArticles);
+            Assert.IsNotEmpty(knowledgebaseArticles);
 
-			var knowledgebaseCommentRequest = new KnowledgebaseCommentRequest
-				{
-					KnowledgebaseArticleId = knowledgebaseArticles.FirstOrDefault().Id,
-					Contents = "contents",
-					Email = "email@domain.com",
-					CreatorType = KnowledgebaseCommentCreatorType.User,
-					FullName = "Fullname"
-				};
+            var knowledgebaseCommentRequest = new KnowledgebaseCommentRequest
+            {
+                KnowledgebaseArticleId = knowledgebaseArticles.FirstOrDefault().Id,
+                Contents = "contents",
+                Email = "email@domain.com",
+                CreatorType = KnowledgebaseCommentCreatorType.User,
+                FullName = "Fullname"
+            };
 
-			var knowledgebaseComment = TestSetup.KayakoApiService.Knowledgebase.CreateKnowledgebaseComment(knowledgebaseCommentRequest);
+            var knowledgebaseComment = TestSetup.KayakoApiService.Knowledgebase.CreateKnowledgebaseComment(knowledgebaseCommentRequest);
 
-			Assert.IsNotNull(knowledgebaseComment);
-			Assert.That(knowledgebaseComment.KnowledgebaseArticleId, Is.EqualTo(knowledgebaseCommentRequest.KnowledgebaseArticleId));
-			Assert.That(knowledgebaseComment.Contents, Is.EqualTo(knowledgebaseCommentRequest.Contents));
-			Assert.That(knowledgebaseComment.Email, Is.EqualTo(knowledgebaseCommentRequest.Email));
-			Assert.That(knowledgebaseComment.CreatorType, Is.EqualTo(knowledgebaseCommentRequest.CreatorType));
-			Assert.That(knowledgebaseComment.FullName, Is.EqualTo(knowledgebaseCommentRequest.FullName));
+            Assert.IsNotNull(knowledgebaseComment);
+            Assert.That(knowledgebaseComment.KnowledgebaseArticleId, Is.EqualTo(knowledgebaseCommentRequest.KnowledgebaseArticleId));
+            Assert.That(knowledgebaseComment.Contents, Is.EqualTo(knowledgebaseCommentRequest.Contents));
+            Assert.That(knowledgebaseComment.Email, Is.EqualTo(knowledgebaseCommentRequest.Email));
+            Assert.That(knowledgebaseComment.CreatorType, Is.EqualTo(knowledgebaseCommentRequest.CreatorType));
+            Assert.That(knowledgebaseComment.FullName, Is.EqualTo(knowledgebaseCommentRequest.FullName));
 
-			var deleteSuccess = TestSetup.KayakoApiService.Knowledgebase.DeleteKnowledgebaseComment(knowledgebaseComment.Id);
+            var deleteSuccess = TestSetup.KayakoApiService.Knowledgebase.DeleteKnowledgebaseComment(knowledgebaseComment.Id);
 
-			Assert.IsTrue(deleteSuccess);
-		}
-	}
+            Assert.IsTrue(deleteSuccess);
+        }
+    }
 }

@@ -1,65 +1,68 @@
 ﻿using System;
-using System.Text;
-using System.Security.Cryptography;
-using System.Net;
-using System.Xml.Serialization;
 using System.IO;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
+using System.Xml.Serialization;
 using KayakoRestApi.Core.Test;
 
 namespace KayakoRestApi.Net
 {
-	public interface IKayakoApiRequest
-	{
-		TTarget ExecutePut<TTarget>(string apiMethod, string parameters) where TTarget : class, new();
+    public interface IKayakoApiRequest
+    {
+        TTarget ExecutePut<TTarget>(string apiMethod, string parameters)
+            where TTarget : class, new();
 
-		TTarget ExecutePost<TTarget>(string apiMethod, string parameters) where TTarget : class, new();
+        TTarget ExecutePost<TTarget>(string apiMethod, string parameters)
+            where TTarget : class, new();
 
-		TTarget ExecuteGet<TTarget>(string apiMethod) where TTarget : class, new();
+        TTarget ExecuteGet<TTarget>(string apiMethod)
+            where TTarget : class, new();
 
-		bool ExecuteDelete(string apiMethod);
-	}
+        bool ExecuteDelete(string apiMethod);
+    }
 
     [Serializable]
-	internal class KayakoApiRequest : IKayakoApiRequest
+    internal class KayakoApiRequest : IKayakoApiRequest
     {
-		private readonly ApiRequestType _requestType;
-        private readonly string _apiKey;
-        private readonly string _secretKey;
-        private readonly string _apiUrl;
-		private readonly IWebProxy _proxy;
-        private string _signature;
-        private string _encodedSignature;
-        private string _salt;
-        
+        private readonly string apiKey;
+        private readonly string apiUrl;
+        private readonly IWebProxy proxy;
+        private readonly ApiRequestType requestType;
+        private readonly string secretKey;
+        private string encodedSignature;
+        private string salt;
+        private string signature;
+
         internal KayakoApiRequest(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
         {
-            _apiKey = apiKey;
-            _secretKey = secretKey;
-            _apiUrl = apiUrl;
-			_proxy = proxy;
-			_requestType = requestType;
+            this.apiKey = apiKey;
+            this.secretKey = secretKey;
+            this.apiUrl = apiUrl;
+            this.proxy = proxy;
+            this.requestType = requestType;
 
-            ComputeSaltAndSignature();
+            this.ComputeSaltAndSignature();
         }
 
         private void ComputeSaltAndSignature()
         {
             // Generate a new globally unique identifier for the salt
-            string salt = Guid.NewGuid().ToString();
-            _salt = salt;
+            var salt = Guid.NewGuid().ToString();
+            this.salt = salt;
 
             // Initialize the keyed hash object using the secret key as the key
-            HMACSHA256 hashObject = new HMACSHA256(Encoding.UTF8.GetBytes(_secretKey));
+            var hashObject = new HMACSHA256(Encoding.UTF8.GetBytes(this.secretKey));
 
             // Computes the signature by hashing the salt with the secret key as the key
-            byte[] signature = hashObject.ComputeHash(Encoding.UTF8.GetBytes(salt));
+            var signature = hashObject.ComputeHash(Encoding.UTF8.GetBytes(salt));
 
             // Base 64 Encode
-            _signature = Convert.ToBase64String(signature);
+            this.signature = Convert.ToBase64String(signature);
 
             // URLEncode
-            _encodedSignature = HttpUtility.UrlEncode(_signature);
+            this.encodedSignature = HttpUtility.UrlEncode(this.signature);
         }
 
         #region Api Connection Methods
@@ -67,183 +70,151 @@ namespace KayakoRestApi.Net
         #region Execute Put/Post/Delete/Get
 
         /// <summary>
-        /// Generic method for extracting data via PUSH.
-        /// </summary>
-        /// <typeparam name="TTarget">Target type to extract</typeparam>
-        /// <param name="requestUrl">URL to request data.</param>
-        /// <param name="parameters">Parameters to post.</param>
-        /// <returns>TTarget result of the extraction</returns>
-        public TTarget ExecutePut<TTarget>(string apiMethod, string parameters) where TTarget : class, new()
-        {
-            return ExecuteCall<TTarget>(apiMethod, parameters, HttpMethod.PUT);
-        }
-
-        /// <summary>
-        /// Generic method for extracting data via POST.
+        ///     Generic method for extracting data via PUSH.
         /// </summary>
         /// <typeparam name="TTarget">Target type to extract</typeparam>
         /// <param name="apiMethod">URL to request data.</param>
         /// <param name="parameters">Parameters to post.</param>
         /// <returns>TTarget result of the extraction</returns>
-        public TTarget ExecutePost<TTarget>(string apiMethod, string parameters) where TTarget : class, new()
-        {
-            return ExecuteCall<TTarget>(apiMethod, parameters, HttpMethod.POST);
-        }
+        public TTarget ExecutePut<TTarget>(string apiMethod, string parameters)
+            where TTarget : class, new() => this.ExecuteCall<TTarget>(apiMethod, parameters, HttpMethod.Put);
 
         /// <summary>
-        /// Generic method for extracting data.
+        ///     Generic method for extracting data via POST.
         /// </summary>
         /// <typeparam name="TTarget">Target type to extract</typeparam>
-        /// <param name="requestUrl">URL to request data.</param>
+        /// <param name="apiMethod">URL to request data.</param>
+        /// <param name="parameters">Parameters to post.</param>
         /// <returns>TTarget result of the extraction</returns>
-        public TTarget ExecuteGet<TTarget>(string apiMethod) where TTarget : class, new()
+        public TTarget ExecutePost<TTarget>(string apiMethod, string parameters)
+            where TTarget : class, new() => this.ExecuteCall<TTarget>(apiMethod, parameters, HttpMethod.Post);
+
+        /// <summary>
+        ///     Generic method for extracting data.
+        /// </summary>
+        /// <typeparam name="TTarget">Target type to extract</typeparam>
+        /// <param name="apiMethod">URL to request data.</param>
+        /// <returns>TTarget result of the extraction</returns>
+        public TTarget ExecuteGet<TTarget>(string apiMethod)
+            where TTarget : class, new() => this.ExecuteCall<TTarget>(apiMethod, string.Empty, HttpMethod.Get);
+
+        /// <summary>
+        ///     Generic method for extracting data via DELETE.
+        /// </summary>
+        /// <param name="apiMethod">URL to request data</param>
+        /// <returns>The success of the delete</returns>
+        public bool ExecuteDelete(string apiMethod)
         {
-            return ExecuteCall<TTarget>(apiMethod, "", HttpMethod.GET);
-        }
+            var requestUrl = this.GetRequestUrl(apiMethod);
+            requestUrl = this.AppendSecurityCredentials(requestUrl, HttpMethod.Delete);
 
-		/// <summary>
-		/// Generic method for extracting data via DELETE.
-		/// </summary>
-		/// <param name="apiMethod">URL to request data</param>
-		/// <returns>The success of the delete</returns>
-		public bool ExecuteDelete(string apiMethod)
-		{
-			string requestUrl = GetRequestUrl(apiMethod);
-			requestUrl = AppendSecurityCredentials(requestUrl, HttpMethod.DELETE);
+            var request = (HttpWebRequest) WebRequest.Create(requestUrl);
+            request.Method = "DELETE";
 
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestUrl);
-			request.Method = "DELETE";
-
-			if (_proxy != null)
-			{
-				request.Proxy = _proxy;
-			}
-
-			try
-			{
-				using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-				{
-					if (response.StatusCode == HttpStatusCode.OK)
-					{
-						return true;
-					}
-				}
-			}
-			catch (WebException ex)
-			{
-				StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-				string s = sr.ReadToEnd();
-
-				throw new InvalidOperationException(s, ex);
-			}
-
-			return false;
-		}
-
-        #endregion
-
-		private string GetRequestUrl(string apiMethod)
-		{
-			string requestUrl = "";
-
-			if (_requestType == ApiRequestType.QueryString)
-			{
-				requestUrl = String.Format("{0}?e={1}", _apiUrl, apiMethod);
-			}
-			else
-			{
-				requestUrl = String.Format("{0}{1}", _apiUrl, apiMethod);
-			}
-
-			return requestUrl;
-		}
-
-		private string AppendSecurityCredentials(string inputString, HttpMethod httpMethod)
-		{
-			string signature = _signature;
-
-			if (httpMethod == HttpMethod.GET)
-			{
-				signature = _encodedSignature;
-			}
-
-			return String.Format("{0}&apikey={1}&salt={2}&signature={3}", inputString, _apiKey, _salt, signature);
-		}
-
-        #region Execute Requests to Api
-
-        private TTarget ExecuteCall<TTarget>(string apiMethod, string parameters, HttpMethod httpMethod) where TTarget : class, new()
-        {
-			string requestUrl = GetRequestUrl(apiMethod);
-			
-            if (httpMethod == HttpMethod.GET)
+            if (this.proxy != null)
             {
-                requestUrl = AppendSecurityCredentials(requestUrl, httpMethod);
+                request.Proxy = this.proxy;
             }
 
-            WebRequest request = WebRequest.Create(requestUrl);
-            request.Method = httpMethod.ToString();
-
-			if (_proxy != null)
-			{
-				request.Proxy = _proxy;
-			}
-
-            if (httpMethod != HttpMethod.GET)
-            {
-                request.ContentType = "application/x-www-form-urlencoded";
-
-				parameters = AppendSecurityCredentials(parameters, httpMethod);
-
-                byte[] bytes = Encoding.UTF8.GetBytes(parameters);
-
-                request.ContentLength = bytes.Length;
-
-                using (Stream os = request.GetRequestStream())
-                {
-                    os.Write(bytes, 0, bytes.Length);
-                }
-            }
-
-            return (TTarget)ProcessWebRequest<TTarget>(request);
-        }
-
-        private TTarget ProcessWebRequest<TTarget>(WebRequest request) where TTarget : class, new()
-        {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(TTarget));
-                using (HttpWebResponse webResponse = request.GetResponse() as HttpWebResponse)
+                using var response = request.GetResponse() as HttpWebResponse;
+                if (response?.StatusCode == HttpStatusCode.OK)
                 {
-                    using (StreamReader sr = new StreamReader(webResponse.GetResponseStream()))
-                    {
-                        string streamContents = sr.ReadToEnd();
-
-						if (typeof(TTarget) == typeof(TestData))
-						{
-							return (TTarget)(object)new TestData(streamContents);
-						}
-						else
-						{
-							using (StringReader serializerStream = new StringReader(streamContents))
-							{
-								TTarget responseData = (TTarget)serializer.Deserialize(serializerStream);
-								return responseData;
-							}
-						}
-                    }
+                    return true;
                 }
             }
             catch (WebException ex)
             {
-                HttpWebResponse response = (HttpWebResponse)ex.Response;
+                var sr = new StreamReader(ex.Response.GetResponseStream() ?? Stream.Null);
+                var s = sr.ReadToEnd();
 
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                throw new InvalidOperationException(s, ex);
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        private string GetRequestUrl(string apiMethod) => string.Format(this.requestType == ApiRequestType.QueryString ? "{0}?e={1}" : "{0}{1}", this.apiUrl, apiMethod);
+
+        private string AppendSecurityCredentials(string inputString, HttpMethod httpMethod)
+        {
+            var signature = this.signature;
+
+            if (httpMethod == HttpMethod.Get)
+            {
+                signature = this.encodedSignature;
+            }
+
+            return string.Format("{0}&apikey={1}&salt={2}&signature={3}", inputString, this.apiKey, this.salt, signature);
+        }
+
+        #region Execute Requests to Api
+
+        private TTarget ExecuteCall<TTarget>(string apiMethod, string parameters, HttpMethod httpMethod)
+            where TTarget : class, new()
+        {
+            var requestUrl = this.GetRequestUrl(apiMethod);
+
+            if (httpMethod == HttpMethod.Get)
+            {
+                requestUrl = this.AppendSecurityCredentials(requestUrl, httpMethod);
+            }
+
+            var request = WebRequest.Create(requestUrl);
+            request.Method = httpMethod.ToString();
+
+            if (this.proxy != null)
+            {
+                request.Proxy = this.proxy;
+            }
+
+            if (httpMethod != HttpMethod.Get)
+            {
+                request.ContentType = "application/x-www-form-urlencoded";
+
+                parameters = this.AppendSecurityCredentials(parameters, httpMethod);
+
+                var bytes = Encoding.UTF8.GetBytes(parameters);
+
+                request.ContentLength = bytes.Length;
+
+                using var os = request.GetRequestStream();
+                os.Write(bytes, 0, bytes.Length);
+            }
+
+            return this.ProcessWebRequest<TTarget>(request);
+        }
+
+        private TTarget ProcessWebRequest<TTarget>(WebRequest request)
+            where TTarget : class, new()
+        {
+            try
+            {
+                var serializer = new XmlSerializer(typeof(TTarget));
+                using var webResponse = request.GetResponse() as HttpWebResponse;
+                using var sr = new StreamReader(webResponse?.GetResponseStream() ?? Stream.Null);
+                var streamContents = sr.ReadToEnd();
+
+                if (typeof(TTarget) == typeof(TestData))
                 {
-                    string streamContents = reader.ReadToEnd();
-
-                    throw new InvalidOperationException(streamContents, ex.InnerException);
+                    return (TTarget) (object) new TestData(streamContents);
                 }
+
+                using var serializerStream = new StringReader(streamContents);
+                var responseData = (TTarget) serializer.Deserialize(serializerStream);
+                return responseData;
+            }
+            catch (WebException ex)
+            {
+                var response = ex.Response as HttpWebResponse;
+
+                using var reader = new StreamReader(response?.GetResponseStream() ?? Stream.Null);
+                var streamContents = reader.ReadToEnd();
+
+                throw new InvalidOperationException(streamContents, ex.InnerException);
             }
         }
 

@@ -7,109 +7,109 @@ using NUnit.Framework;
 
 namespace KayakoRestApi.UnitTests.Departments
 {
-	[TestFixture]
-	public class DepartmentRequestTests
-	{
-		[Test]
-		public void IsValidTest()
-		{
-			var departmentRequest = new DepartmentRequest
-				{
-					DisplayOrder = 2,
-					Module = DepartmentModule.LiveChat,
-					ParentDepartmentId = 2,
-					Title = "Title",
-					Type = DepartmentType.Private,
-					UserGroups = new List<int>(),
-					UserVisibilityCustom = false
-				};
+    [TestFixture]
+    public class DepartmentRequestTests
+    {
+        [Test]
+        public void IsValidTest()
+        {
+            var departmentRequest = new DepartmentRequest
+            {
+                DisplayOrder = 2,
+                Module = DepartmentModule.LiveChat,
+                ParentDepartmentId = 2,
+                Title = "Title",
+                Type = DepartmentType.Private,
+                UserGroups = new List<int>(),
+                UserVisibilityCustom = false
+            };
 
-			Assert.IsTrue(departmentRequest.IsValid(RequestTypes.Create));
-			Assert.IsTrue(departmentRequest.IsValid(RequestTypes.Update));
-			Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Create));
-			Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Update));
-		}
+            Assert.IsTrue(departmentRequest.IsValid(RequestTypes.Create));
+            Assert.IsTrue(departmentRequest.IsValid(RequestTypes.Update));
+            Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Create));
+            Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Update));
+        }
 
-		[Test]
-		public void EnsureValidDataTest()
-		{
-			var departmentRequest = new DepartmentRequest
-			{
-				DisplayOrder = 2,
-				Module = DepartmentModule.LiveChat,
-				ParentDepartmentId = 2,
-				Title = "Title",
-				Type = DepartmentType.Private,
-				UserGroups = new List<int>(),
-				UserVisibilityCustom = false
-			};
+        [Test]
+        public void EnsureValidDataTest()
+        {
+            var departmentRequest = new DepartmentRequest
+            {
+                DisplayOrder = 2,
+                Module = DepartmentModule.LiveChat,
+                ParentDepartmentId = 2,
+                Title = "Title",
+                Type = DepartmentType.Private,
+                UserGroups = new List<int>(),
+                UserVisibilityCustom = false
+            };
 
-			Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Create));
-			Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Update));
-		}
+            Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Create));
+            Assert.DoesNotThrow(() => departmentRequest.EnsureValidData(RequestTypes.Update));
+        }
 
-		[Test]
-		public void FromResponseDataTest()
-		{
-			var departmentRequest = new DepartmentRequest
-			{
-				Id = 2,
-				DisplayOrder = 2,
-				Module = DepartmentModule.LiveChat,
-				ParentDepartmentId = 2,
-				Title = "Title",
-				Type = DepartmentType.Private,
-				UserGroups = new List<int>(),
-				UserVisibilityCustom = false
-			};
+        [Test]
+        public void FromResponseDataTest()
+        {
+            var departmentRequest = new DepartmentRequest
+            {
+                Id = 2,
+                DisplayOrder = 2,
+                Module = DepartmentModule.LiveChat,
+                ParentDepartmentId = 2,
+                Title = "Title",
+                Type = DepartmentType.Private,
+                UserGroups = new List<int>(),
+                UserVisibilityCustom = false
+            };
 
-			var department = new Department
-				{
-					Id = 2,
-					DisplayOrder = 2,
-					Module = DepartmentModule.LiveChat,
-					ParentDepartmentId = 2,
-					Title = "Title",
-					Type = DepartmentType.Private,
-					UserGroups = new List<int>(),
-					UserVisibilityCustom = false
-				};
+            var department = new Department
+            {
+                Id = 2,
+                DisplayOrder = 2,
+                Module = DepartmentModule.LiveChat,
+                ParentDepartmentId = 2,
+                Title = "Title",
+                Type = DepartmentType.Private,
+                UserGroups = new List<int>(),
+                UserVisibilityCustom = false
+            };
 
-			var departmentRequestResult = DepartmentRequest.FromResponseData(department);
+            var departmentRequestResult = DepartmentRequest.FromResponseData(department);
 
-			AssertUtility.ObjectsEqual(departmentRequest, departmentRequestResult);
-		}
+            AssertUtility.ObjectsEqual(departmentRequest, departmentRequestResult);
+        }
 
-		[Test]
-		public void ToResponseDataTest()
-		{
-			var departmentRequest = new DepartmentRequest
-			{
-				Id = 2,
-				DisplayOrder = 2,
-				Module = DepartmentModule.LiveChat,
-				ParentDepartmentId = 2,
-				Title = "Title",
-				Type = DepartmentType.Private,
-				UserGroups = new List<int>(),
-				UserVisibilityCustom = false
-			};
+        [Test]
+        public void ToResponseDataTest()
+        {
+            var departmentRequest = new DepartmentRequest
+            {
+                Id = 2,
+                DisplayOrder = 2,
+                Module = DepartmentModule.LiveChat,
+                ParentDepartmentId = 2,
+                Title = "Title",
+                Type = DepartmentType.Private,
+                UserGroups = new List<int>(),
+                UserVisibilityCustom = false
+            };
 
-			var department = new Department
-			{
-				Id = 2,
-				DisplayOrder = 2,
-				Module = DepartmentModule.LiveChat,
-				ParentDepartmentId = 2,
-				Title = "Title",
-				Type = DepartmentType.Private,
-				UserGroups = new List<int>(),
-				UserVisibilityCustom = false
-			};
+            var department = new Department
+            {
+                Id = 2,
+                DisplayOrder = 2,
+                Module = DepartmentModule.LiveChat,
+                ParentDepartmentId = 2,
+                Title = "Title",
+                Type = DepartmentType.Private,
+                UserGroups = new List<int>(),
+                UserVisibilityCustom = false
+            };
 
-			var departmentResult = DepartmentRequest.ToResponseData(departmentRequest);
+            var departmentResult = DepartmentRequest.ToResponseData(departmentRequest);
 
-			AssertUtility.ObjectsEqual(department, departmentResult);
-		}
-	}
+            AssertUtility.ObjectsEqual(department, departmentResult);
+        }
+    }
 }

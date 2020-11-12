@@ -1,25 +1,16 @@
-﻿using KayakoRestApi.Net;
-using System.Net;
+﻿using System.Net;
+using KayakoRestApi.Net;
 
 namespace KayakoRestApi.Controllers
 {
     public class BaseController
     {
-        internal IKayakoApiRequest Connector { get; set;}
+        internal BaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy) => this.Connector = new KayakoApiRequest(apiKey, secretKey, apiUrl, proxy, ApiRequestType.QueryString);
 
-        internal BaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
-        {
-            Connector = new KayakoApiRequest(apiKey, secretKey, apiUrl, proxy, ApiRequestType.QueryString);
-        }
+        internal BaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType) => this.Connector = new KayakoApiRequest(apiKey, secretKey, apiUrl, proxy, requestType);
 
-		internal BaseController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
-		{
-			Connector = new KayakoApiRequest(apiKey, secretKey, apiUrl, proxy, requestType);
-		}
+        internal BaseController(IKayakoApiRequest kayakoApiRequest) => this.Connector = kayakoApiRequest;
 
-		internal BaseController(IKayakoApiRequest kayakoApiRequest)
-		{
-			Connector = kayakoApiRequest;
-		}
+        internal IKayakoApiRequest Connector { get; }
     }
 }

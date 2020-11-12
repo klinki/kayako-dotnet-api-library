@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using NUnit.Framework;
-using KayakoRestApi.Core;
-using KayakoRestApi.Core.Tickets;
 using KayakoRestApi.Core.Departments;
 using System.Linq;
 using KayakoRestApi.Core.Staff;
+using KayakoRestApi.Core.Tickets.Ticket;
+using KayakoRestApi.Core.Tickets.TicketPost;
+using KayakoRestApi.IntegrationTests.TestBase;
 
 namespace KayakoRestApi.IntegrationTests
 {
@@ -55,8 +56,8 @@ namespace KayakoRestApi.IntegrationTests
 			TicketCollection tickets = TestSetup.KayakoApiService.Tickets.GetTickets(depts.Select(d => d.Id).ToArray());
 			Ticket randomTicket = tickets[new Random().Next(tickets.Count)];
 
-			string subject = "New Post Subject";
-			string contents = "This will be the contents";
+			const string subject = "New Post Subject";
+			const string contents = "This will be the contents";
 
             TicketPostRequest request = new TicketPostRequest()
             {

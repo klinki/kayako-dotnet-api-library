@@ -3,29 +3,29 @@
 namespace KayakoRestApi.Utilities
 {
     /// <summary>
-    /// Utility to convert between DateTime and Unix Time
+    ///     Utility to convert between DateTime and Unix Time
     /// </summary>
-	public static class UnixTimeUtility
-	{
+    public static class UnixTimeUtility
+    {
         /// <summary>
-        /// Converts a DateTime object to Unix Time
+        ///     Converts a DateTime object to Unix Time
         /// </summary>
-		public static long ToUnixTime(DateTime dateTime)
-		{
-			DateTime unixRef = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-			TimeSpan diff = dateTime - unixRef;
+        public static long ToUnixTime(DateTime dateTime)
+        {
+            var unixRef = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var diff = dateTime - unixRef;
 
-			return (long)Math.Floor(diff.TotalSeconds);
-		}
+            return (long) Math.Floor(diff.TotalSeconds);
+        }
 
         /// <summary>
-        /// Converts a Unix Time to a DateTime object
+        ///     Converts a Unix Time to a DateTime object
         /// </summary>
-		public static DateTime FromUnixTime(long unixTime)
-		{
-			DateTime unixRef = new DateTime(1970, 1, 1, 0, 0, 0);
+        public static DateTime FromUnixTime(long unixTime)
+        {
+            var unixRef = new DateTime(1970, 1, 1, 0, 0, 0);
 
-			return unixRef.AddSeconds(unixTime);
-		}
-	}
+            return unixRef.AddSeconds(unixTime);
+        }
+    }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
-namespace KayakoRestApi.Core.Tickets
+namespace KayakoRestApi.Core.Tickets.TicketCustomField
 {
     [XmlRoot("group")]
     public class TicketCustomFieldGroup

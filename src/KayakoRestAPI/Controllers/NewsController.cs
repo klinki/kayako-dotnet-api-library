@@ -1,398 +1,382 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using KayakoRestApi.Core.News;
-using KayakoRestApi.Data;
 using KayakoRestApi.Net;
 using KayakoRestApi.RequestBase;
 using KayakoRestApi.Text;
+using KayakoRestApi.Utilities;
 
 namespace KayakoRestApi.Controllers
 {
-	public interface INewsController
-	{
-		NewsCategoryCollection GetNewsCategories();
+    public interface INewsController
+    {
+        NewsCategoryCollection GetNewsCategories();
 
-		NewsCategory GetNewsCategory(int newsCategoryId);
+        NewsCategory GetNewsCategory(int newsCategoryId);
 
-		NewsCategory CreateNewsCategory(NewsCategoryRequest newsCategoryRequest);
+        NewsCategory CreateNewsCategory(NewsCategoryRequest newsCategoryRequest);
 
-		NewsCategory UpdateNewsCategory(NewsCategoryRequest newsCategoryRequest);
+        NewsCategory UpdateNewsCategory(NewsCategoryRequest newsCategoryRequest);
 
-		bool DeleteNewsCategory(int newsCategoryId);
+        bool DeleteNewsCategory(int newsCategoryId);
 
-		NewsItemCollection GetNewsItems(int newsCategoryId);
+        NewsItemCollection GetNewsItems(int newsCategoryId);
 
-		NewsItemCollection GetNewsItems();
+        NewsItemCollection GetNewsItems();
 
-		NewsItem GetNewsItem(int newsItemId);
+        NewsItem GetNewsItem(int newsItemId);
 
-		NewsItem CreateNewsItem(NewsItemRequest newsItemRequest);
+        NewsItem CreateNewsItem(NewsItemRequest newsItemRequest);
 
-		NewsItem UpdateNewsItem(NewsItemRequest newsItemRequest);
+        NewsItem UpdateNewsItem(NewsItemRequest newsItemRequest);
 
-		bool DeleteNewsItem(int newsItemId);
+        bool DeleteNewsItem(int newsItemId);
 
-		NewsSubscriberCollection GetNewsSubscribers();
+        NewsSubscriberCollection GetNewsSubscribers();
 
-		NewsSubscriber GetNewsSubscriber(int newsSubscriberId);
+        NewsSubscriber GetNewsSubscriber(int newsSubscriberId);
 
-		NewsSubscriber CreateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest);
+        NewsSubscriber CreateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest);
 
-		NewsSubscriber UpdateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest);
+        NewsSubscriber UpdateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest);
 
-		bool DeleteNewsSubscriber(int newsSubscriberId);
+        bool DeleteNewsSubscriber(int newsSubscriberId);
 
-		NewsItemCommentCollection GetNewsItemComments(int newsItemId);
-		
-		NewsItemComment GetNewsItemComment(int newsItemCommentId);
+        NewsItemCommentCollection GetNewsItemComments(int newsItemId);
 
-		NewsItemComment CreateNewsItemComment(NewsItemCommentRequest newsItemCommentRequest);
+        NewsItemComment GetNewsItemComment(int newsItemCommentId);
 
-		bool DeleteNewsItemComment(int newsItemCommentId);
-	}
+        NewsItemComment CreateNewsItemComment(NewsItemCommentRequest newsItemCommentRequest);
 
-	public sealed class NewsController : BaseController, INewsController
-	{
+        bool DeleteNewsItemComment(int newsItemCommentId);
+    }
+
+    public sealed class NewsController : BaseController, INewsController
+    {
+        private const string NewsCategoryBaseUrl = "/News/Category";
+        private const string NewsItemBaseUrl = "/News/NewsItem";
+        private const string NewsSubscriberBaseUrl = "/News/Subscriber";
+        private const string NewsItemCommentBaseUrl = "/News/Comment";
+
         public NewsController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy)
-            : base(apiKey, secretKey, apiUrl, proxy)
-        {
-        }
+            : base(apiKey, secretKey, apiUrl, proxy) { }
 
         public NewsController(string apiKey, string secretKey, string apiUrl, IWebProxy proxy, ApiRequestType requestType)
-			: base(apiKey, secretKey, apiUrl, proxy, requestType)
-		{
-		}
+            : base(apiKey, secretKey, apiUrl, proxy, requestType) { }
 
-        public NewsController(IKayakoApiRequest kayakoApiRequest) 
-			: base(kayakoApiRequest)
-		{
-		}
+        public NewsController(IKayakoApiRequest kayakoApiRequest)
+            : base(kayakoApiRequest) { }
 
-		private const string NewsCategoryBaseUrl = "/News/Category";
-		private const string NewsItemBaseUrl = "/News/NewsItem";
-		private const string NewsSubscriberBaseUrl = "/News/Subscriber";
-		private const string NewsItemCommentBaseUrl = "/News/Comment";
+        #region News Category Methods
 
-		#region News Category Methods
+        public NewsCategoryCollection GetNewsCategories() => this.Connector.ExecuteGet<NewsCategoryCollection>(NewsCategoryBaseUrl);
 
-		public NewsCategoryCollection GetNewsCategories()
-		{
-			return Connector.ExecuteGet<NewsCategoryCollection>(NewsCategoryBaseUrl);
-		}
+        public NewsCategory GetNewsCategory(int newsCategoryId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsCategoryBaseUrl, newsCategoryId);
 
-		public NewsCategory GetNewsCategory(int newsCategoryId)
-		{
-			string apiMethod = String.Format("{0}/{1}", NewsCategoryBaseUrl, newsCategoryId);
+            var newsCategories = this.Connector.ExecuteGet<NewsCategoryCollection>(apiMethod);
 
-			NewsCategoryCollection newsCategories = Connector.ExecuteGet<NewsCategoryCollection>(apiMethod);
+            if (newsCategories != null && newsCategories.Count > 0)
+            {
+                return newsCategories[0];
+            }
 
-			if (newsCategories != null && newsCategories.Count > 0)
-			{
-				return newsCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public NewsCategory CreateNewsCategory(NewsCategoryRequest newsCategoryRequest)
+        {
+            var parameters = PopulateRequestParameters(newsCategoryRequest, RequestTypes.Create);
 
-		public NewsCategory CreateNewsCategory(NewsCategoryRequest newsCategoryRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(newsCategoryRequest, RequestTypes.Create);
+            var newsCategories = this.Connector.ExecutePost<NewsCategoryCollection>(NewsCategoryBaseUrl, parameters.ToString());
 
-			NewsCategoryCollection newsCategories = Connector.ExecutePost<NewsCategoryCollection>(NewsCategoryBaseUrl, parameters.ToString());
+            if (newsCategories != null && newsCategories.Count > 0)
+            {
+                return newsCategories[0];
+            }
 
-			if (newsCategories != null && newsCategories.Count > 0)
-			{
-				return newsCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public NewsCategory UpdateNewsCategory(NewsCategoryRequest newsCategoryRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsCategoryBaseUrl, newsCategoryRequest.Id);
+            var parameters = PopulateRequestParameters(newsCategoryRequest, RequestTypes.Update);
 
-		public NewsCategory UpdateNewsCategory(NewsCategoryRequest newsCategoryRequest)
-		{
-			string apiMethod = String.Format("{0}/{1}", NewsCategoryBaseUrl, newsCategoryRequest.Id);
-			RequestBodyBuilder parameters = PopulateRequestParameters(newsCategoryRequest, RequestTypes.Update);
+            var newsCategories = this.Connector.ExecutePut<NewsCategoryCollection>(apiMethod, parameters.ToString());
 
-			NewsCategoryCollection newsCategories = Connector.ExecutePut<NewsCategoryCollection>(apiMethod, parameters.ToString());
+            if (newsCategories != null && newsCategories.Count > 0)
+            {
+                return newsCategories[0];
+            }
 
-			if (newsCategories != null && newsCategories.Count > 0)
-			{
-				return newsCategories[0];
-			}
+            return null;
+        }
 
-			return null;
-		}
+        public bool DeleteNewsCategory(int newsCategoryId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsCategoryBaseUrl, newsCategoryId);
 
-		public bool DeleteNewsCategory(int newsCategoryId)
-		{
-			string apiMethod = String.Format("{0}/{1}", NewsCategoryBaseUrl, newsCategoryId);
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+        private static RequestBodyBuilder PopulateRequestParameters(NewsCategoryRequest newsCategory, RequestTypes requestType)
+        {
+            newsCategory.EnsureValidData(requestType);
 
-		private static RequestBodyBuilder PopulateRequestParameters(NewsCategoryRequest newsCategory, RequestTypes requestType)
-		{
-			newsCategory.EnsureValidData(requestType);
+            var parameters = new RequestBodyBuilder();
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
+            if (!string.IsNullOrEmpty(newsCategory.Title))
+            {
+                parameters.AppendRequestData("title", newsCategory.Title);
+            }
 
-			if (!String.IsNullOrEmpty(newsCategory.Title))
-			{
-				parameters.AppendRequestData("title", newsCategory.Title);
-			}
+            parameters.AppendRequestData("visibilitytype", EnumUtility.ToApiString(newsCategory.VisibilityType));
 
-			parameters.AppendRequestData("visibilitytype", EnumUtility.ToApiString(newsCategory.VisibilityType));
+            return parameters;
+        }
 
-			return parameters;
-		}
+        #endregion
 
-		#endregion
+        #region News Item Methods
 
-		#region News Item Methods
+        public NewsItemCollection GetNewsItems(int newsCategoryId)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}", NewsItemBaseUrl, newsCategoryId);
 
-		public NewsItemCollection GetNewsItems(int newsCategoryId)
-		{
-			string apiMethod = String.Format("{0}/ListAll/{1}", NewsItemBaseUrl, newsCategoryId);
+            return this.Connector.ExecuteGet<NewsItemCollection>(apiMethod);
+        }
 
-			return Connector.ExecuteGet<NewsItemCollection>(apiMethod);
-		}
+        public NewsItemCollection GetNewsItems() => this.Connector.ExecuteGet<NewsItemCollection>(NewsItemBaseUrl);
 
-		public NewsItemCollection GetNewsItems()
-		{
-			return Connector.ExecuteGet<NewsItemCollection>(NewsItemBaseUrl);
-		}
-
-		public NewsItem GetNewsItem(int newsItemId)
-		{
-			string apiMethod = String.Format("{0}/{1}", NewsItemBaseUrl, newsItemId);
-
-			var newsItems = Connector.ExecuteGet<NewsItemCollection>(apiMethod);
-
-			if (newsItems != null && newsItems.Count > 0)
-			{
-				return newsItems[0];
-			}
-
-			return null;
-		}
-
-		public NewsItem CreateNewsItem(NewsItemRequest newsItemRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(newsItemRequest, RequestTypes.Create);
-
-			NewsItemCollection newsItems = Connector.ExecutePost<NewsItemCollection>(NewsItemBaseUrl, parameters.ToString());
-
-			if (newsItems != null && newsItems.Count > 0)
-			{
-				return newsItems[0];
-			}
-
-			return null;
-		}
-
-		public NewsItem UpdateNewsItem(NewsItemRequest newsItemRequest)
-		{
-			string apiMethod = string.Format("{0}/{1}", NewsItemBaseUrl, newsItemRequest.Id);
-
-			RequestBodyBuilder parameters = PopulateRequestParameters(newsItemRequest, RequestTypes.Update);
-
-			NewsItemCollection newsItems = Connector.ExecutePut<NewsItemCollection>(apiMethod, parameters.ToString());
-
-			if (newsItems != null && newsItems.Count > 0)
-			{
-				return newsItems[0];
-			}
+        public NewsItem GetNewsItem(int newsItemId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsItemBaseUrl, newsItemId);
 
-			return null;
-		}
+            var newsItems = this.Connector.ExecuteGet<NewsItemCollection>(apiMethod);
 
-		public bool DeleteNewsItem(int newsItemId)
-		{
-			string apiMethod = string.Format("{0}/{1}", NewsItemBaseUrl, newsItemId);
+            if (newsItems != null && newsItems.Count > 0)
+            {
+                return newsItems[0];
+            }
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            return null;
+        }
 
-		private static RequestBodyBuilder PopulateRequestParameters(NewsItemRequest newsItem, RequestTypes requestType)
-		{
-			newsItem.EnsureValidData(requestType);
+        public NewsItem CreateNewsItem(NewsItemRequest newsItemRequest)
+        {
+            var parameters = PopulateRequestParameters(newsItemRequest, RequestTypes.Create);
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestDataNonEmptyString("subject", newsItem.Subject);
-			parameters.AppendRequestDataNonEmptyString("contents", newsItem.Contents);
+            var newsItems = this.Connector.ExecutePost<NewsItemCollection>(NewsItemBaseUrl, parameters.ToString());
 
-			if (requestType == RequestTypes.Create)
-			{
-				parameters.AppendRequestDataNonNegativeInt("staffid", newsItem.StaffId);
-			}
-			else
-			{
-				parameters.AppendRequestDataNonNegativeInt("editedstaffid", newsItem.StaffId);
-			}
+            if (newsItems != null && newsItems.Count > 0)
+            {
+                return newsItems[0];
+            }
 
-			if (requestType == RequestTypes.Create && newsItem.NewsItemType.HasValue)
-			{
-				parameters.AppendRequestData("newstype", EnumUtility.ToApiString(newsItem.NewsItemType));
-			}
+            return null;
+        }
 
-			if (newsItem.NewsItemStatus.HasValue)
-			{
-				parameters.AppendRequestData("newsstatus", EnumUtility.ToApiString(newsItem.NewsItemStatus));
-			}
+        public NewsItem UpdateNewsItem(NewsItemRequest newsItemRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsItemBaseUrl, newsItemRequest.Id);
 
-			parameters.AppendRequestDataNonEmptyString("fromname", newsItem.FromName);
-			parameters.AppendRequestDataNonEmptyString("email", newsItem.Email);
-			parameters.AppendRequestDataNonEmptyString("customemailsubject", newsItem.CustomEmailSubject);
-			parameters.AppendRequestDataBool("sendemail", newsItem.SendEmail);
-			parameters.AppendRequestDataBool("allowcomments", newsItem.AllowComments);
-			parameters.AppendRequestDataBool("uservisibilitycustom", newsItem.UserVisibilityCustom);
-			parameters.AppendRequestDataArrayCommaSeparated("usergroupidlist", newsItem.UserGroupIdList);
-			parameters.AppendRequestDataBool("staffvisibilitycustom", newsItem.StaffVisibilityCustom);
-			parameters.AppendRequestDataArrayCommaSeparated("staffgroupidlist", newsItem.StaffGroupIdList);
-			parameters.AppendRequestData("expiry", newsItem.Expiry.DateTime.ToString("M/d/yyyy"));
-			parameters.AppendRequestDataArrayCommaSeparated("newscategoryidlist", newsItem.Categories);
-			
-			return parameters;
-		}
+            var parameters = PopulateRequestParameters(newsItemRequest, RequestTypes.Update);
 
-		#endregion
+            var newsItems = this.Connector.ExecutePut<NewsItemCollection>(apiMethod, parameters.ToString());
 
-		#region News Subscriber Methods
+            if (newsItems != null && newsItems.Count > 0)
+            {
+                return newsItems[0];
+            }
 
-		public NewsSubscriberCollection GetNewsSubscribers()
-		{
-			return Connector.ExecuteGet<NewsSubscriberCollection>(NewsSubscriberBaseUrl);
-		}
+            return null;
+        }
 
-		public NewsSubscriber GetNewsSubscriber(int newsSubscriberId)
-		{
-			string apiMethod = String.Format("{0}/{1}", NewsSubscriberBaseUrl, newsSubscriberId);
+        public bool DeleteNewsItem(int newsItemId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsItemBaseUrl, newsItemId);
 
-			var newsSubscribers = Connector.ExecuteGet<NewsSubscriberCollection>(apiMethod);
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-			if (newsSubscribers != null && newsSubscribers.Count > 0)
-			{
-				return newsSubscribers[0];
-			}
+        private static RequestBodyBuilder PopulateRequestParameters(NewsItemRequest newsItem, RequestTypes requestType)
+        {
+            newsItem.EnsureValidData(requestType);
 
-			return null;
-		}
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestDataNonEmptyString("subject", newsItem.Subject);
+            parameters.AppendRequestDataNonEmptyString("contents", newsItem.Contents);
 
-		public NewsSubscriber CreateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest)
-		{
-			RequestBodyBuilder parameters = PopulateRequestParameters(newsSubscriberRequest, RequestTypes.Create);
+            if (requestType == RequestTypes.Create)
+            {
+                parameters.AppendRequestDataNonNegativeInt("staffid", newsItem.StaffId);
+            }
+            else
+            {
+                parameters.AppendRequestDataNonNegativeInt("editedstaffid", newsItem.StaffId);
+            }
 
-			NewsSubscriberCollection newsSubscriber = Connector.ExecutePost<NewsSubscriberCollection>(NewsSubscriberBaseUrl, parameters.ToString());
+            if (requestType == RequestTypes.Create && newsItem.NewsItemType.HasValue)
+            {
+                parameters.AppendRequestData("newstype", EnumUtility.ToApiString(newsItem.NewsItemType));
+            }
 
-			if (newsSubscriber != null && newsSubscriber.Count > 0)
-			{
-				return newsSubscriber[0];
-			}
+            if (newsItem.NewsItemStatus.HasValue)
+            {
+                parameters.AppendRequestData("newsstatus", EnumUtility.ToApiString(newsItem.NewsItemStatus));
+            }
 
-			return null;
-		}
+            parameters.AppendRequestDataNonEmptyString("fromname", newsItem.FromName);
+            parameters.AppendRequestDataNonEmptyString("email", newsItem.Email);
+            parameters.AppendRequestDataNonEmptyString("customemailsubject", newsItem.CustomEmailSubject);
+            parameters.AppendRequestDataBool("sendemail", newsItem.SendEmail);
+            parameters.AppendRequestDataBool("allowcomments", newsItem.AllowComments);
+            parameters.AppendRequestDataBool("uservisibilitycustom", newsItem.UserVisibilityCustom);
+            parameters.AppendRequestDataArrayCommaSeparated("usergroupidlist", newsItem.UserGroupIdList);
+            parameters.AppendRequestDataBool("staffvisibilitycustom", newsItem.StaffVisibilityCustom);
+            parameters.AppendRequestDataArrayCommaSeparated("staffgroupidlist", newsItem.StaffGroupIdList);
+            parameters.AppendRequestData("expiry", newsItem.Expiry.DateTime.ToString("M/d/yyyy"));
+            parameters.AppendRequestDataArrayCommaSeparated("newscategoryidlist", newsItem.Categories);
 
-		public NewsSubscriber UpdateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest)
-		{
-			string apiMethod = string.Format("{0}/{1}", NewsSubscriberBaseUrl, newsSubscriberRequest.Id);
+            return parameters;
+        }
 
-			RequestBodyBuilder parameters = PopulateRequestParameters(newsSubscriberRequest, RequestTypes.Update);
+        #endregion
 
-			NewsSubscriberCollection newsSubscriber = Connector.ExecutePut<NewsSubscriberCollection>(apiMethod, parameters.ToString());
+        #region News Subscriber Methods
 
-			if (newsSubscriber != null && newsSubscriber.Count > 0)
-			{
-				return newsSubscriber[0];
-			}
+        public NewsSubscriberCollection GetNewsSubscribers() => this.Connector.ExecuteGet<NewsSubscriberCollection>(NewsSubscriberBaseUrl);
 
-			return null;
-		}
+        public NewsSubscriber GetNewsSubscriber(int newsSubscriberId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsSubscriberBaseUrl, newsSubscriberId);
 
-		public bool DeleteNewsSubscriber(int newsSubscriberId)
-		{
-			string apiMethod = string.Format("{0}/{1}", NewsSubscriberBaseUrl, newsSubscriberId);
+            var newsSubscribers = this.Connector.ExecuteGet<NewsSubscriberCollection>(apiMethod);
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+            if (newsSubscribers != null && newsSubscribers.Count > 0)
+            {
+                return newsSubscribers[0];
+            }
 
-		private RequestBodyBuilder PopulateRequestParameters(NewsSubscriberRequest newsSubscriberRequest, RequestTypes requestTypes)
-		{
-			newsSubscriberRequest.EnsureValidData(requestTypes);
+            return null;
+        }
 
-			var requestBodyBuilder = new RequestBodyBuilder();
-			requestBodyBuilder.AppendRequestDataNonEmptyString("email", newsSubscriberRequest.Email);
+        public NewsSubscriber CreateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest)
+        {
+            var parameters = this.PopulateRequestParameters(newsSubscriberRequest, RequestTypes.Create);
 
-			if (requestTypes == RequestTypes.Create)
-			{
-				requestBodyBuilder.AppendRequestDataBool("isvalidated", newsSubscriberRequest.IsValidated);
-			}
+            var newsSubscriber = this.Connector.ExecutePost<NewsSubscriberCollection>(NewsSubscriberBaseUrl, parameters.ToString());
 
-			return requestBodyBuilder;
-		}
+            if (newsSubscriber != null && newsSubscriber.Count > 0)
+            {
+                return newsSubscriber[0];
+            }
 
-		#endregion
+            return null;
+        }
 
-		#region News Item Comment Methods
+        public NewsSubscriber UpdateNewsSubscriber(NewsSubscriberRequest newsSubscriberRequest)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsSubscriberBaseUrl, newsSubscriberRequest.Id);
 
-		public NewsItemCommentCollection GetNewsItemComments(int newsItemId)
-		{
-			string apiMethod = string.Format("{0}/ListAll/{1}", NewsItemCommentBaseUrl, newsItemId);
+            var parameters = this.PopulateRequestParameters(newsSubscriberRequest, RequestTypes.Update);
 
-			return Connector.ExecuteGet<NewsItemCommentCollection>(apiMethod);
-		}
+            var newsSubscriber = this.Connector.ExecutePut<NewsSubscriberCollection>(apiMethod, parameters.ToString());
 
-		public NewsItemComment GetNewsItemComment(int newsItemCommentId)
-		{
-			string apiMethod = string.Format("{0}/{1}", NewsItemCommentBaseUrl, newsItemCommentId);
+            if (newsSubscriber != null && newsSubscriber.Count > 0)
+            {
+                return newsSubscriber[0];
+            }
 
-			var newsItemComments = Connector.ExecuteGet<NewsItemCommentCollection>(apiMethod);
+            return null;
+        }
 
-			if (newsItemComments != null && newsItemComments.Count > 0)
-			{
-				return newsItemComments[0];
-			}
+        public bool DeleteNewsSubscriber(int newsSubscriberId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsSubscriberBaseUrl, newsSubscriberId);
 
-			return null;
-		}
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
 
-		public NewsItemComment CreateNewsItemComment(NewsItemCommentRequest newsItemCommentRequest)
-		{
-			newsItemCommentRequest.EnsureValidData(RequestTypes.Create);
+        private RequestBodyBuilder PopulateRequestParameters(NewsSubscriberRequest newsSubscriberRequest, RequestTypes requestTypes)
+        {
+            newsSubscriberRequest.EnsureValidData(requestTypes);
 
-			RequestBodyBuilder parameters = new RequestBodyBuilder();
-			parameters.AppendRequestData("newsitemid", newsItemCommentRequest.NewsItemId);
-			parameters.AppendRequestDataNonEmptyString("contents", newsItemCommentRequest.Contents);
-			parameters.AppendRequestData("creatortype", EnumUtility.ToApiString(newsItemCommentRequest.CreatorType));
+            var requestBodyBuilder = new RequestBodyBuilder();
+            requestBodyBuilder.AppendRequestDataNonEmptyString("email", newsSubscriberRequest.Email);
 
-			if (newsItemCommentRequest.CreatorId != null)
-			{
-				parameters.AppendRequestData("creatorid", newsItemCommentRequest.CreatorId);
-			}
-			else
-			{
-				parameters.AppendRequestDataNonEmptyString("fullname", newsItemCommentRequest.FullName);
-			}
+            if (requestTypes == RequestTypes.Create)
+            {
+                requestBodyBuilder.AppendRequestDataBool("isvalidated", newsSubscriberRequest.IsValidated);
+            }
 
-			parameters.AppendRequestDataNonEmptyString("email", newsItemCommentRequest.Email);
-			parameters.AppendRequestData("parentcommentid", newsItemCommentRequest.ParentCommentId);
+            return requestBodyBuilder;
+        }
 
-			var newsItemComments = Connector.ExecutePost<NewsItemCommentCollection>(NewsItemCommentBaseUrl, parameters.ToString());
+        #endregion
 
-			if (newsItemComments != null && newsItemComments.Count > 0)
-			{
-				return newsItemComments[0];
-			}
+        #region News Item Comment Methods
 
-			return null;
-		}
+        public NewsItemCommentCollection GetNewsItemComments(int newsItemId)
+        {
+            var apiMethod = string.Format("{0}/ListAll/{1}", NewsItemCommentBaseUrl, newsItemId);
 
-		public bool DeleteNewsItemComment(int newsItemCommentId)
-		{
-			string apiMethod = string.Format("{0}/{1}", NewsItemCommentBaseUrl, newsItemCommentId);
+            return this.Connector.ExecuteGet<NewsItemCommentCollection>(apiMethod);
+        }
 
-			return Connector.ExecuteDelete(apiMethod);
-		}
+        public NewsItemComment GetNewsItemComment(int newsItemCommentId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsItemCommentBaseUrl, newsItemCommentId);
 
-		#endregion
-	}
+            var newsItemComments = this.Connector.ExecuteGet<NewsItemCommentCollection>(apiMethod);
+
+            if (newsItemComments != null && newsItemComments.Count > 0)
+            {
+                return newsItemComments[0];
+            }
+
+            return null;
+        }
+
+        public NewsItemComment CreateNewsItemComment(NewsItemCommentRequest newsItemCommentRequest)
+        {
+            newsItemCommentRequest.EnsureValidData(RequestTypes.Create);
+
+            var parameters = new RequestBodyBuilder();
+            parameters.AppendRequestData("newsitemid", newsItemCommentRequest.NewsItemId);
+            parameters.AppendRequestDataNonEmptyString("contents", newsItemCommentRequest.Contents);
+            parameters.AppendRequestData("creatortype", EnumUtility.ToApiString(newsItemCommentRequest.CreatorType));
+
+            if (newsItemCommentRequest.CreatorId != null)
+            {
+                parameters.AppendRequestData("creatorid", newsItemCommentRequest.CreatorId);
+            }
+            else
+            {
+                parameters.AppendRequestDataNonEmptyString("fullname", newsItemCommentRequest.FullName);
+            }
+
+            parameters.AppendRequestDataNonEmptyString("email", newsItemCommentRequest.Email);
+            parameters.AppendRequestData("parentcommentid", newsItemCommentRequest.ParentCommentId);
+
+            var newsItemComments = this.Connector.ExecutePost<NewsItemCommentCollection>(NewsItemCommentBaseUrl, parameters.ToString());
+
+            if (newsItemComments != null && newsItemComments.Count > 0)
+            {
+                return newsItemComments[0];
+            }
+
+            return null;
+        }
+
+        public bool DeleteNewsItemComment(int newsItemCommentId)
+        {
+            var apiMethod = string.Format("{0}/{1}", NewsItemCommentBaseUrl, newsItemCommentId);
+
+            return this.Connector.ExecuteDelete(apiMethod);
+        }
+
+        #endregion
+    }
 }

@@ -2,12 +2,12 @@
 
 namespace KayakoRestApi.Core.Constants
 {
-    public enum TicketCreationType
+    public enum TicketRequestCreationType
     {
-        [XmlEnum("1")]
+        [XmlEnum("default")]
         Default,
 
-        [XmlEnum("2")]
+        [XmlEnum("phone")]
         Phone
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using KayakoRestApi.Controllers;
+﻿using KayakoRestApi.Controllers;
 using KayakoRestApi.Core.CustomFields;
 using KayakoRestApi.Net;
 using KayakoRestApi.UnitTests.Utilities;
@@ -8,59 +7,59 @@ using NUnit.Framework;
 
 namespace KayakoRestApi.UnitTests.CustomFields
 {
-	[TestFixture]
-	public class CustomFieldControllerTests
-	{
-		private ICustomFieldController _customFieldController;
-		private Mock<IKayakoApiRequest> _kayakoApiRequest;
-		private CustomFieldCollection _responseCustomFieldCollection;
-		private CustomFieldOptionCollection _responseCustomFieldOptionsCollection;
+    [TestFixture]
+    public class CustomFieldControllerTests
+    {
+        [SetUp]
+        public void Setup()
+        {
+            this.kayakoApiRequest = new Mock<IKayakoApiRequest>();
+            this.customFieldController = new CustomFieldController(this.kayakoApiRequest.Object);
 
-		[SetUp]
-		public void Setup()
-		{
-			_kayakoApiRequest = new Mock<IKayakoApiRequest>();
-			_customFieldController = new CustomFieldController(_kayakoApiRequest.Object);
-			
-			_responseCustomFieldCollection = new CustomFieldCollection
-				{
-					new CustomField(),
-					new CustomField()
-				};
+            this.responseCustomFieldCollection = new CustomFieldCollection
+            {
+                new CustomField(),
+                new CustomField()
+            };
 
-			_responseCustomFieldOptionsCollection = new CustomFieldOptionCollection
-				{
-					new CustomFieldOption(),
-					new CustomFieldOption()
-				};
-		}
+            this.responseCustomFieldOptionsCollection = new CustomFieldOptionCollection
+            {
+                new CustomFieldOption(),
+                new CustomFieldOption()
+            };
+        }
 
-		[Test]
-		public void GetCustomFields()
-		{
-			const string apiMethod = "/Base/CustomField";
+        private ICustomFieldController customFieldController;
+        private Mock<IKayakoApiRequest> kayakoApiRequest;
+        private CustomFieldCollection responseCustomFieldCollection;
+        private CustomFieldOptionCollection responseCustomFieldOptionsCollection;
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<CustomFieldCollection>(apiMethod)).Returns(_responseCustomFieldCollection);
+        [Test]
+        public void GetCustomFields()
+        {
+            const string apiMethod = "/Base/CustomField";
 
-			var customFields = _customFieldController.GetCustomFields();
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<CustomFieldCollection>(apiMethod)).Returns(this.responseCustomFieldCollection);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<CustomFieldCollection>(apiMethod), Times.Once());
-			AssertUtility.ObjectsEqual(customFields, _responseCustomFieldCollection);
-		}
+            var customFields = this.customFieldController.GetCustomFields();
 
-		[TestCase(1)]
-		[TestCase(2)]
-		[TestCase(3)]
-		public void GetCustomFieldListOptions(int customFieldId)
-		{
-			var apiMethod = string.Format("/Base/CustomField/ListOptions/{0}", customFieldId);
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<CustomFieldCollection>(apiMethod), Times.Once());
+            AssertUtility.ObjectsEqual(customFields, this.responseCustomFieldCollection);
+        }
 
-			_kayakoApiRequest.Setup(x => x.ExecuteGet<CustomFieldOptionCollection>(apiMethod)).Returns(_responseCustomFieldOptionsCollection);
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void GetCustomFieldListOptions(int customFieldId)
+        {
+            var apiMethod = string.Format("/Base/CustomField/ListOptions/{0}", customFieldId);
 
-			var customFieldOptions = _customFieldController.GetCustomFieldOptions(customFieldId);
+            this.kayakoApiRequest.Setup(x => x.ExecuteGet<CustomFieldOptionCollection>(apiMethod)).Returns(this.responseCustomFieldOptionsCollection);
 
-			_kayakoApiRequest.Verify(x => x.ExecuteGet<CustomFieldOptionCollection>(apiMethod), Times.Once());
-			AssertUtility.ObjectsEqual(customFieldOptions, _responseCustomFieldOptionsCollection);
-		}
-	}
+            var customFieldOptions = this.customFieldController.GetCustomFieldOptions(customFieldId);
+
+            this.kayakoApiRequest.Verify(x => x.ExecuteGet<CustomFieldOptionCollection>(apiMethod), Times.Once());
+            AssertUtility.ObjectsEqual(customFieldOptions, this.responseCustomFieldOptionsCollection);
+        }
+    }
 }

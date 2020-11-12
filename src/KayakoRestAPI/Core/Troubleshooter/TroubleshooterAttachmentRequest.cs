@@ -1,29 +1,24 @@
 ﻿using KayakoRestApi.RequestBase;
+using KayakoRestApi.RequestBase.Attributes;
 
 namespace KayakoRestApi.Core.Troubleshooter
 {
-	public class TroubleshooterAttachmentRequest : RequestBaseObject
-	{
-		[RequiredField]
-		[ResponseProperty("TroubleshooterStepId")]
-		public int TroubleshooterStepId { get; set; }
+    public class TroubleshooterAttachmentRequest : RequestBaseObject
+    {
+        [RequiredField]
+        [ResponseProperty("TroubleshooterStepId")]
+        public int TroubleshooterStepId { get; set; }
 
-		[RequiredField]
-		[ResponseProperty("FileName")]
-		public string FileName { get; set; }
+        [RequiredField]
+        [ResponseProperty("FileName")]
+        public string FileName { get; set; }
 
-		[RequiredField]
-		[ResponseProperty("Contents")]
-		public string Contents { get; set; }
+        [RequiredField]
+        [ResponseProperty("Contents")]
+        public string Contents { get; set; }
 
-		public static TroubleshooterAttachmentRequest FromResponseData(TroubleshooterAttachment responseData)
-		{
-			return FromResponseType<TroubleshooterAttachment, TroubleshooterAttachmentRequest>(responseData);
-		}
+        public static TroubleshooterAttachmentRequest FromResponseData(TroubleshooterAttachment responseData) => FromResponseType<TroubleshooterAttachment, TroubleshooterAttachmentRequest>(responseData);
 
-		public static TroubleshooterAttachment ToResponseData(TroubleshooterAttachmentRequest requestData)
-		{
-			return ToResponseType<TroubleshooterAttachmentRequest, TroubleshooterAttachment>(requestData);
-		}
-	}
+        public static TroubleshooterAttachment ToResponseData(TroubleshooterAttachmentRequest requestData) => ToResponseType<TroubleshooterAttachmentRequest, TroubleshooterAttachment>(requestData);
+    }
 }
