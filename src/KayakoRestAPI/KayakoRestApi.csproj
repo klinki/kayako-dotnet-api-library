@@ -8,10 +8,20 @@
     <Version>2.0.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
-    <PackageTags>Kayako api</PackageTags>
+    <PackageTags>kayako fusion case helpdesk</PackageTags>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>kayako.snk</AssemblyOriginatorKeyFile>
     <PublicSign>true</PublicSign>
+    <PackageId>KayakoRestApi-Netcore</PackageId>
+    <Copyright>Kayako</Copyright>
+    <PackageProjectUrl>https://github.com/Zubastic/kayako-dotnet-api-library</PackageProjectUrl>
+    <PackageLicense>https://github.com/Zubastic/kayako-dotnet-api-library/blob/master/LICENSE</PackageLicense>
+    <PackageIcon>kayako.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Zubastic/kayako-dotnet-api-library</RepositoryUrl>
 </PropertyGroup>
+
+<ItemGroup>
+    <None Include="kayako.png" Pack="true" PackagePath="\" />
+</ItemGroup>
 
 </Project>
