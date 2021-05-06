@@ -77,7 +77,7 @@ namespace KayakoRestApi.Core.Users
         ///     Gets a value indicating the date
         /// </summary>
         [XmlElement("dateline")]
-        public long Dateline { get; set; }
+        public KNullable<long> Dateline { get; set; }
 
         /// <summary>
         ///     Gets a value indicating the last visit of the user
@@ -107,12 +107,12 @@ namespace KayakoRestApi.Core.Users
         ///     The SLA Plan Id to assign to the user
         /// </summary>
         [XmlElement("slaplanid")]
-        public int SlaPlanId { get; set; }
+        public KNullable<int> SlaPlanId { get; set; }
 
         /// <summary>
         ///     The SLA Plan Expiry, 0 = never expires
         /// </summary>
         [XmlElement("slaplanexpiry")]
-        public long SlaPlanExpiry { get; set; }
+        public KNullable<long> SlaPlanExpiry { get; set; }
     }
 }
