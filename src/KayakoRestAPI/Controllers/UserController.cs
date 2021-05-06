@@ -26,7 +26,7 @@ namespace KayakoRestApi.Controllers
 
         User GetUser(int userId);
 
-        User CreateUser(UserRequest user, string password, bool sendWelcomeEmail);
+        User CreateUser(UserRequest user, string password, bool? sendWelcomeEmail = null);
 
         User UpdateUser(UserRequest user);
 
@@ -123,7 +123,7 @@ namespace KayakoRestApi.Controllers
         /// <summary>
         ///     Create a new User record
         /// </summary>
-        public User CreateUser(UserRequest user, string password, bool sendWelcomeEmail)
+        public User CreateUser(UserRequest user, string password, bool? sendWelcomeEmail = null)
         {
             const string apiMethod = "/Base/User/";
 
@@ -134,7 +134,10 @@ namespace KayakoRestApi.Controllers
                 parameters.AppendRequestData("password", password);
             }
 
-            parameters.AppendRequestData("sendwelcomeemail", Convert.ToInt32(sendWelcomeEmail));
+            if (sendWelcomeEmail.HasValue)
+            {
+                parameters.AppendRequestData("sendwelcomeemail", Convert.ToInt32(sendWelcomeEmail.Value));
+            }
 
             var users = this.Connector.ExecutePost<UserCollection>(apiMethod, parameters.ToString());
 
