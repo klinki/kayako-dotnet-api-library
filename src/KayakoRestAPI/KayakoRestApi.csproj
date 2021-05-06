@@ -5,7 +5,6 @@
     <Product>Kayako REST Api Library</Product>
     <Description>C# .NET Implementation of the Kayako REST Api which allows connection and integratation a Kayako helpdesk.</Description>
     <Configurations>Debug;Release;Build</Configurations>
-    <Version>2.0.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     <PackageTags>kayako fusion case helpdesk</PackageTags>
@@ -14,12 +13,13 @@
     <PublicSign>true</PublicSign>
     <PackageId>KayakoRestApi-Netcore</PackageId>
     <Copyright>Kayako</Copyright>
-    <PackageProjectUrl>https://github.com/Zubastic/kayako-dotnet-api-library</PackageProjectUrl>
-    <PackageLicense>https://github.com/Zubastic/kayako-dotnet-api-library/blob/master/LICENSE</PackageLicense>
+    <PackageProjectUrl>https://github.com/klinki/kayako-dotnet-api-library</PackageProjectUrl>
+    <PackageLicense>https://github.com/klinki/kayako-dotnet-api-library/blob/master/LICENSE</PackageLicense>
     <PackageIcon>kayako.png</PackageIcon>
     <PackageLicenseExpression>BSD-4-Clause</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Zubastic/kayako-dotnet-api-library</RepositoryUrl>
-    <Authors>Kayako, Zubastic</Authors>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/klinki/kayako-dotnet-api-library</RepositoryUrl>
+    <Authors>Kayako, Zubastic, Klinki</Authors>
 </PropertyGroup>
 
 <ItemGroup>
