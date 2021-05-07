@@ -93,13 +93,13 @@ namespace KayakoRestApi.Core.Users
         ///     The SLA Plan Expiry, 0 = never expires
         /// </summary>
         [ResponseProperty("SlaPlanExpiry")]
-        public long? SlaPlanExpiry { get; set; }
+        public KNullable<long> SlaPlanExpiry { get; set; }
 
         /// <summary>
         ///     The User Expiry, 0 = never expires
         /// </summary>
         [ResponseProperty("Expiry")]
-        public long? Expiry { get; set; }
+        public KNullable<long> Expiry { get; set; }
 
         public static UserRequest FromResponseData(User responseData) => FromResponseType<User, UserRequest>(responseData);
 
