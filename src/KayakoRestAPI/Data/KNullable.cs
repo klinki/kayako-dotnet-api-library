@@ -31,6 +31,8 @@ namespace KayakoRestApi.Data
 
         public override bool Equals(object obj) => this.ValueData.Equals(obj);
 
+        public override string ToString() => this.ValueData?.ToString();
+
         #region IXmlSerializable Methods
 
         public XmlSchema GetSchema() => null;
