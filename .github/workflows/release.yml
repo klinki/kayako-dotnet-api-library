@@ -21,14 +21,15 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore /p:ContinuousIntegrationBuild=true
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore /p:ContinuousIntegrationBuild=true
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
     - name: Pack
-      run: dotnet pack --configuration Release /p:Version=${VERSION} --output .
+      run: dotnet pack --configuration Release /p:Version=${VERSION} /p:ContinuousIntegrationBuild=true /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg --output .
     - name: Push
       run: dotnet nuget push KayakoRestAPI-Netcore.${VERSION}.nupkg --source https://nuget.pkg.github.com/klinki/index.json --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

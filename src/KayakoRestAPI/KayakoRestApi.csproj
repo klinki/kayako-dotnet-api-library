@@ -18,6 +18,13 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/klinki/kayako-dotnet-api-library</RepositoryUrl>
     <Authors>Kayako, Zubastic, Klinki</Authors>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign>true</PublicSign>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
 </PropertyGroup>
 
 <ItemGroup>
