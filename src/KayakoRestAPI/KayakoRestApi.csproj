@@ -9,7 +9,6 @@
     <LangVersion>latest</LangVersion>
     <PackageTags>kayako fusion case helpdesk</PackageTags>
     <AssemblyOriginatorKeyFile>kayako.snk</AssemblyOriginatorKeyFile>
-    <PublicSign>true</PublicSign>
     <PackageId>KayakoRestApi-Netcore</PackageId>
     <Copyright>Kayako</Copyright>
     <PackageProjectUrl>https://github.com/klinki/kayako-dotnet-api-library</PackageProjectUrl>
