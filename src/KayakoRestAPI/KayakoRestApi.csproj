@@ -8,7 +8,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     <PackageTags>kayako fusion case helpdesk</PackageTags>
-    <AssemblyOriginatorKeyFile>kayako.snk</AssemblyOriginatorKeyFile>
     <PackageId>KayakoRestApi-Netcore</PackageId>
     <Copyright>Kayako</Copyright>
     <PackageProjectUrl>https://github.com/klinki/kayako-dotnet-api-library</PackageProjectUrl>
@@ -18,14 +17,30 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/klinki/kayako-dotnet-api-library</RepositoryUrl>
     <Authors>Kayako, Zubastic, Klinki</Authors>
-    <SignAssembly>true</SignAssembly>
-    <PublicSign>true</PublicSign>
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 </PropertyGroup>
+
+<Choose>
+    <When Condition=" '$(Configuration)' == 'Debug' ">
+        <PropertyGroup>
+            <SignAssembly>false</SignAssembly>
+            <PublicSign>false</PublicSign>
+        </PropertyGroup>
+    </When>
+    <When Condition=" '$(Configuration)'=='Release' ">
+        <PropertyGroup>
+            <!--
+            <SignAssembly>true</SignAssembly>
+            <DelaySign>false</DelaySign>
+            <AssemblyOriginatorKeyFile>test-new-keyfile.snk</AssemblyOriginatorKeyFile>
+            -->
+        </PropertyGroup>
+    </When>
+</Choose>
 
 <ItemGroup>
     <None Include="kayako.png" Pack="true" PackagePath="\" />
