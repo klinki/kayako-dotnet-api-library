@@ -214,7 +214,7 @@ namespace KayakoRestApi.Net
                 using var reader = new StreamReader(response?.GetResponseStream() ?? Stream.Null);
                 var streamContents = reader.ReadToEnd();
 
-                throw new InvalidOperationException(streamContents, ex.InnerException);
+                throw new InvalidOperationException(streamContents, ex);
             }
         }
 
