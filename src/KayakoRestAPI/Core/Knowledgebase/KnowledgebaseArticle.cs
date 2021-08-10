@@ -76,7 +76,7 @@ namespace KayakoRestApi.Core.Knowledgebase
         public KnowledgebaseArticleStatus ArticleStatus { get; set; }
 
         [XmlElement("articlerating")]
-        public int ArticleRating { get; set; }
+        public double ArticleRating { get; set; }
 
         [XmlElement("ratinghits")]
         public int RatingHits { get; set; }
